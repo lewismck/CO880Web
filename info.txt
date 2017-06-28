@@ -1,0 +1,29 @@
+##URL##
+The web component is hosted on Raptor with the MySQL database hosted on Dragon.
+The URL to view the website is: http://raptor.kent.ac.uk/~lam54/co880/index.php
+
+##Directory Structure##
+Early Deliverable Writing.pdf
+info.txt
+/Web
+  index.php
+  /tests
+    personTest.php
+    storyMakerTest.php
+  /ajax
+    /js
+      phpcals.js
+    /php
+      classes.php
+      connect.php
+      evaluatestory.php
+      getstory.php
+      storydata.php
+
+/Java
+  /bin
+    Main.class
+    StoryBuilder.class
+  /src
+    Main.java
+    StoryBuilder.java
