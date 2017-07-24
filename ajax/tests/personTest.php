@@ -4,8 +4,8 @@
  *Includes the classes.php file for access to all the currently written classes
  */
 //use phpunit\framework\TestCase;
-require_once ('./ajax/php/classes.php');
-require_once ('./ajax/php/connect.php');
+require_once ('./php/classes.php');
+require_once ('./php/connect.php');
 
 
 /*Test methods in person class - not a huge number of methods to test*/

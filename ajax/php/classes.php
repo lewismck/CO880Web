@@ -1,4 +1,96 @@
 <?php
+class Main {
+
+  /*
+   * Query all the story data from the KB and set it as javascript variables
+   *
+   *
+   */
+  public function setup(){
+
+    $KBQuery = "SELECT
+                  GROUP_CONCAT(TRIM(event_sequence) SEPARATOR '') event_seq
+                , GROUP_CONCAT(TRIM(action_sequence) SEPARATOR '') action_seq
+                , GROUP_CONCAT(TRIM(location_sequence) SEPARATOR '') location_seq
+                FROM good_story;";
+    $KBData = executeQuery($KBQuery);
+    $event_seq = $KBData[0]['event_seq'];
+    $action_seq = $KBData[0]['action_seq'];
+    $location_seq = $KBData[0]['location_seq'];
+    // echo "<script> var ev_seq1 = '".$event_seq."';</script>";
+    // echo "<script> var ac_seq1 = '".$action_seq."';</script>";
+    // echo "<script> var loc_seq1 = '".$location_seq."';</script>";
+
+    //return a KB_Data object
+    $kbData = new KB_Data($action_seq, $event_seq, $location_seq);
+    return $kbData;
+  }
+
+
+  /*
+   * @param array (_GET/_POST) containing parameters to be parsed.
+   * TODO sanitise inputs
+   */
+  public function parseParams($params){
+    $parsedParams = new ParsedParams();
+    foreach($params as $key => $value){
+      //echo "$key: $value<br />";
+      if($key == 'func'){
+        $parsedParams->func = $value;
+      }
+      elseif($key == 'ev_cycle_count'){
+        $parsedParams->ev_cycle_count = $value;
+      }
+      elseif($key == 'ac_cycle_count'){
+        $parsedParams->ac_cycle_count = $value;
+      }
+      elseif($key == 'loc_cycle_count'){
+        $parsedParams->loc_cycle_count = $value;
+      }
+      elseif($key == 'ac_seq'){
+        $parsedParams->ac_seq = $value;
+      }
+      elseif($key == 'ev_seq'){
+        $parsedParams->ev_seq = $value;
+      }
+      elseif($key == 'loc_seq'){
+        $parsedParams->loc_seq = $value;
+      }
+      elseif($key == 'no_dop'){
+        $parsedParams->no_doppelgangers = $value;
+      }
+      elseif($key == 'rd'){
+        $parsedParams->respect_death = $value;
+      }
+    }
+    return $parsedParams;
+  }
+}
+
+class KB_Data {
+        public $action_seq;
+        public $event_seq;
+        public $location_seq;
+
+        //constructor
+        public function __construct($action_seq, $event_seq, $location_seq){
+          $this->action_seq = $action_seq;
+          $this->event_seq = $event_seq;
+          $this->location_seq = $location_seq;
+        }
+}
+
+class ParsedParams {
+        public $func;
+        public $ev_cycle_count;
+        public $ac_cycle_count;
+        public $loc_cycle_count;
+        public $ac_seq;
+        public $ev_seq;
+        public $loc_seq;
+        public $no_doppelgangers;
+        public $respect_death;
+}
 /*
  *Classes for the main story components: Person, Location, Action, Event (& their consequences)
  *Also contains a StoryMaker class with functions for creating and returning the story components-
@@ -16,6 +108,8 @@
              public $temperment;
              public $emotional_state = 0;
              public $es_desc = 'x';
+             public $arc_es = '';
+             public $arc_desc = '';
 
              // Assigning the values
              public function __construct($id, $firstname, $lastname, $gender, $descID, $age, $temperment) {
@@ -156,6 +250,8 @@ class EventCon {
 /*
  * Run cycles of actions or events with different parameters
  * for the rulesets involved
+ * TODO refactor to extend StoryMaker - Change creation statements
+ * TODO when refactored move getXbyID functions to StoryMaker
  */
  class ReflectionCycle{
   private $reflectSM;
@@ -176,7 +272,7 @@ class EventCon {
      */
 
      /*
-      * TODO rename to  actionCycleCM
+      * TODO refactor so only 1 return ...
       * @param char1 a person object type
       * @param char2 a person object type
       * @Return an action - can use the action to update c1_es and c2_es
@@ -219,6 +315,7 @@ class EventCon {
       $char2->updateES($currentAction->c2_es, $currentAction->c2_es_desc);
       return $currentAction;
     }
+
     /*
      * @param id of the action to return
      * @return action with the specified ac_id
@@ -257,22 +354,24 @@ class EventCon {
         ORDER BY RAND() LIMIT 1;";
         return $this->reflectSM->getAction($actionStatement);
      }
-    /*
-     * @param id of the event to return
-     * @return action with the specified event_id
-     * TODO sanitise the ID passed in?
-     * TODO Move to StoryMaker class
-     */
-    public function getEventByID($event_id){
-      $eventStatement = "SELECT event.*
-                         , ec.brief AS con_brief
-                         , ec.long_desc AS con_long
-                         , ec.tone AS con_tone
-                         FROM event
-                         JOIN event_consequence ec ON event.consequence = ec.con_id
-                         WHERE event.event_id = ".$event_id.";";
-      return $this->reflectSM->getEvent($eventStatement);
-    }
+
+     /*
+      * @param id of the event to return
+      * @return action with the specified event_id
+      * TODO sanitise the ID passed in?
+      * TODO Move to StoryMaker class
+      */
+     public function getEventByID($event_id){
+       $eventStatement = "SELECT event.*
+                          , ec.brief AS con_brief
+                          , ec.long_desc AS con_long
+                          , ec.tone AS con_tone
+                          FROM event
+                          JOIN event_consequence ec ON event.consequence = ec.con_id
+                          WHERE event.event_id = ".$event_id.";";
+       return $this->reflectSM->getEvent($eventStatement);
+     }
+
     /*
      * Pick a new event at random and return it
      * eventCycle should get

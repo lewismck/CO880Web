@@ -18,6 +18,96 @@ function generateStory(kb) {
       }
     });
 }
+/*
+ * Call the setup section in main.php to get the KB returned as variables
+ *
+ */
+function mainSetup() {
+  //var func = $("#functionCall").val();
+  //$("#storyBox").html("<h3><strong>Testing...</strong></h3>");
+  //var charcount = $("#charcount").val();
+    $.ajax({
+      type: "GET",
+      url: "ajax/php/main.php?func=setup",
+      dataType: "html",
+      success: function(response){
+            $("#storyBox").html(response);
+      }
+    });
+}
+
+/*
+ * TODO Hardcoded value getting from inputs now - will make function accept parameters later
+ * Call the setup section in main.php to get the KB returned as variables
+ * @param ev_seq
+ * @param ac_seq
+ * @param ev_cycle
+ * @param ac_cycle
+ * @param loc_cycle
+ * @param respect_death
+ * @param no_dop
+ * @param use_cm //TODO implement in parseParams
+ * @return
+ */
+function getStory() {
+  var ev_cycle = $("#ev_cycle").val();
+  var ev_seed = $("#ev_seed").val();
+  var ac_cycle = $("#ac_cycle").val();
+  var no_dop = $("#no_dop").val();
+  var ev_n_grams = makeNgrams(ev_seq_kb, 1);
+  var ev_seq = markovIt(ev_seed, ev_n_grams, 1, ev_cycle);
+  //$("#storyBox").html("<h3><strong>Testing...</strong></h3>");
+  //var charcount = $("#charcount").val();
+    $.ajax({
+      type: "GET",
+      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&ev_cycle_count="+ev_cycle+"&ac_cycle_count="+ac_cycle+"&no_dop="+no_dop,
+      dataType: "html",
+      success: function(response){
+            $("#storyBox").html(response);
+      }
+    });
+}
+
+
+/**
+  * TODO Write a checkElementExists() function that will check the returned ID from the markovIt function
+  * exists in the KB and can be used for processing 
+  * MARKOV and N-Gram code
+  * Function to make N-Grams of a string returns arrays
+  * Function to generate an n length sequence given a set of N-Grams
+ **/
+ function makeNgrams(src, n){
+   var ngrams = {};
+
+   for (var i = 0; i <= src.length-n; i++){
+     var gram = src.substring(i, i+n);
+     if(!ngrams[gram]){
+       ngrams[gram] = [];
+     }
+     ngrams[gram].push(src.charAt(i+n));
+   }
+   console.log(ngrams);
+   return ngrams;
+ }
+
+ function markovIt(seed, ngrams, n, limit){
+   var currentGram = seed;
+   var result = currentGram;
+
+   //Include check for when exceeding length of txt
+   for(var i = 0; i < limit; i++){
+     var possibilities = ngrams[currentGram];
+     //console.log(possibilities);
+     var next = possibilities[Math.floor(Math.random() * possibilities.length)];
+     result += next;
+     var len = result.length;
+     currentGram = result.substring(len-n, len);
+     //console.log(result);
+   }
+   console.log(result);
+   //$("#resultBox").append(result+"<br>");
+   return result;
+ }
 
 /*
  * Print text to the outlineBox div

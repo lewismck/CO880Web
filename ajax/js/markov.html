@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<!-- bootstrap for styling -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+ <!-- Bootstrap and jquery js -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <!-- Project specific JS - Makes calls to different PHP scripts which in turn call functions in this file -->
+	<!-- <script src="MarkovTesting.js"></script> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Test Markov</title>
+</head>
+<body>
+	<button onclick="markovIt();">Markov</button>
+	<p id="resultBox"></p>
+<script>
+	//var txt = "this a pervasive part of our daily lives and culture. Implemented in the Vignette Based Partial Order Causal Link story planner, is an algorithm that searches through a space of possible story solutions, guided by combinations of existing story fragments called vignettes. The vignettes are made relevant to novel story generation contexts through an automated transformation pre-process. Through these processes, we show that story generation can incorporate multiple perspectives on computational creativity. Our approach is presented at both the theoretical and technical levels.";
+	//var txt = "comparative, scientific evaluation of creativity is essential for progress in computational creativity, not least to justify how creative a computational creativity system actually is. The question of computational creativity evalu- ation itself is non-trivial and can be considered one of the ‘Grand Challenges’ of computational creativity research [1]. The research in this paper is offered as a practical methodological contribution towards addressing this Grand Challenge. As will be described during the paper, the methodological approach taken is influenced by key find- ings in a wide range of creativity research, both compu- tational and human."
+	var txt = "56666535555656665663555996536665";
+	var order = 1;
+	var ngrams = {};
+
+	for (var i = 0; i <= txt.length-order; i++){
+		var gram = txt.substring(i, i+order);
+		if(!ngrams[gram]){
+			ngrams[gram] = [];
+		}
+		ngrams[gram].push(txt.charAt(i+order));
+	}
+	console.log(ngrams);
+
+	function markovIt(){
+		var currentGram = txt.substring(0, order);
+		var result = currentGram;
+
+		//Include check for when exceeding length of txt
+		for(var i = 0; i < 3; i++){
+			var possibilities = ngrams[currentGram];
+			//console.log(possibilities);
+			var next = possibilities[Math.floor(Math.random() * possibilities.length)];
+			result += next;
+			var len = result.length;
+			currentGram = result.substring(len-order, len);
+			console.log(result);
+		}
+		$("#resultBox").append(result+"<br>");
+	}
+</script>
+</body>
+</html>

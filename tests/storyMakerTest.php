@@ -3,11 +3,10 @@
  *For including all tests of StoryMaker class
  *Includes the classes.php file for access to all the currently written classes
  *And the connect.php file for connecting to the db
- *The requires are relative to the path the test is being run from - for running in bulk make them relative to /tests directory
  */
 
-require_once ('../ajax/php/classes.php');
-require_once ('../ajax/php/connect.php');
+require_once ('./ajax/php/classes.php');
+require_once ('./ajax/php/connect.php');
 
 /*Some hastily written tests:*/
 class StoryMakerTest extends PHPUnit_Framework_TestCase {

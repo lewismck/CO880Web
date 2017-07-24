@@ -56,7 +56,7 @@ echo "<script>var cycleCount = '".$_GET['cycleCount']."';</script>";
 //Pass that chain to a loop for processing
 
 //Make 2 characters
-$char1 = $sm->getCharacterByID(2);
+$char1 = $sm->makeCharacter();
 echo $char1->describe();
 echo "<br>";
 $char2 = $sm->getCharacterWhoIsnt($char1->id);

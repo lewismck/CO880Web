@@ -7,9 +7,6 @@ Early Deliverable Writing.pdf
 info.txt
 /Web
   index.php
-  /tests
-    personTest.php
-    storyMakerTest.php
   /ajax
     /js
       phpcals.js
@@ -19,3 +16,13 @@ info.txt
       evaluatestory.php
       getstory.php
       storydata.php
+    /tests
+      personTest.php
+      storyMakerTest.php
+/Java
+  /bin
+    Main.class
+    StoryBuilder.class
+  /src
+    Main.java
+    StoryBuilder.java
