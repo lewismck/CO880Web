@@ -19,11 +19,3 @@ info.txt
       evaluatestory.php
       getstory.php
       storydata.php
-
-/Java
-  /bin
-    Main.class
-    StoryBuilder.class
-  /src
-    Main.java
-    StoryBuilder.java

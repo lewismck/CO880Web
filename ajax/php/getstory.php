@@ -40,13 +40,13 @@ else{
 }
 
   $locationStatement = "SELECT * FROM location ORDER BY RAND() LIMIT 1;";
-  $actionStatement = "SELECT action.*, action_consequence.brief AS con_brief, action_consequence.long_desc AS con_long, action_consequence.tone AS con_tone
+  $actionStatement = "SELECT action.*, ac.brief AS con_brief, ac.long_desc AS con_long, ac.tone AS con_tone
                       FROM action
-                      JOIN action_consequence ON action.consequence=action_consequence.con_id
+                      JOIN action_consequence ac ON action.consequence=action_consequence.con_id
                       ORDER BY RAND() LIMIT 1;";
-  $eventStatement = "SELECT event.*, event_consequence.brief AS con_brief, event_consequence.long_desc AS con_long, event_consequence.tone AS con_tone
+  $eventStatement = "SELECT event.*, ec.brief AS con_brief, ec.long_desc AS con_long, ec.tone AS con_tone
                      FROM event
-                     JOIN event_consequence ON event.consequence=event_consequence.con_id
+                     JOIN event_consequence ec ON event.consequence = ec.con_id
                      ORDER BY RAND() LIMIT 1;";
 
   /*execute CHARACTER statement*/
@@ -72,7 +72,7 @@ else{
       ${'person'.$i} = new Person($rowC['c_id'], $rowC['fName'], $rowC['lName'], $rowC['gender'], $rowC['c_desc'], $rowC['age'], $rowC['temperment']);
       //echo ${'person'.$i}->describe();
 
-      /*Turn the Person object into a JSON array to give to a javascript function*/
+      /*Turn the Person object into a JSON object to give to a javascript function*/
       $passablePerson = json_encode(${'person'.$i});
 
       echo "<a class='text-info' onclick='showDetails(".$passablePerson.",".$i.",".$charIdentifier.");' style='cursor: pointer;'>".${'person'.$i}->firstname." ".${'person'.$i}->lastname."</a><br>
@@ -99,7 +99,7 @@ else{
   $actionIdentifier = "\"a\"";
   $actionSequence = "";
   $actionSequence.=$action1->id." ";
-  /*Turn the Action object into a JSON array to give to a javascript function*/
+  /*Turn the Action object into a JSON object to give to a javascript function*/
   $passableAction = json_encode($action1);
 
   echo "<a class='text-warning' onclick='showDetails(".$passableAction.",1,".$actionIdentifier.");' style='cursor: pointer;'>".$actionBrief."</a><br>

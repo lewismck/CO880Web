@@ -2,6 +2,7 @@
 /*
  *For including all tests of Person methods
  *Includes the classes.php file for access to all the currently written classes
+ *The requires are relative to the path the test is being run from - for running in bulk make them relative to /tests directory
  */
 //use phpunit\framework\TestCase;
 require_once ('../ajax/php/classes.php');
