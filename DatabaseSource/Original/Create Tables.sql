@@ -21,6 +21,22 @@
    PRIMARY KEY (`story_id`)
  )
 
+ /*evaluated_story Table*/
+ CREATE TABLE evaluated_story (
+   story_id int(11) NOT NULL AUTO_INCREMENT,
+   event_sequence varchar(150) NOT NULL,
+   location_sequence varchar(150) NOT NULL,
+   action_sequence varchar(150) NOT NULL,
+   rating varchar(2),
+   respect_death int(1) DEFAULT 1,
+   allow_doppelgangers int(1) DEFAULT 0,
+   character_motive int(1) DEFAULT 1,
+   invert_cm int(1) DEFAULT 0,
+   markov_event int(1) DEFAULT 1,
+   markov_location int(1) DEFAULT 1,
+   markov_action int(1) DEFAULT 0,
+   PRIMARY KEY (story_id)
+ );
 /*
  * ACTION TABLES
  */

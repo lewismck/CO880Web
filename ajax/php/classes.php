@@ -1,4 +1,5 @@
 <?php
+require_once('queries.php');
 class Main {
 
   /*
@@ -8,21 +9,17 @@ class Main {
    */
   public function setup(){
 
-    $KBQuery = "SELECT
-                  GROUP_CONCAT(TRIM(event_sequence) SEPARATOR '') event_seq
-                , GROUP_CONCAT(TRIM(action_sequence) SEPARATOR '') action_seq
-                , GROUP_CONCAT(TRIM(location_sequence) SEPARATOR '') location_seq
-                FROM good_story;";
+    global $KBQuery, $eventSeedGet, $locationSeedGet;
+
+
     $KBData = executeQuery($KBQuery);
     $event_seq = $KBData[0]['event_seq'];
     $action_seq = $KBData[0]['action_seq'];
     $location_seq = $KBData[0]['location_seq'];
-    // echo "<script> var ev_seq1 = '".$event_seq."';</script>";
-    // echo "<script> var ac_seq1 = '".$action_seq."';</script>";
-    // echo "<script> var loc_seq1 = '".$location_seq."';</script>";
-
+    $event_seeds = executeQuery($eventSeedGet);
+    $location_seeds = executeQuery($locationSeedGet);
     //return a KB_Data object
-    $kbData = new KB_Data($action_seq, $event_seq, $location_seq);
+    $kbData = new KB_Data($action_seq, $event_seq, $location_seq, $event_seeds, $location_seeds);
     return $kbData;
   }
 
@@ -71,12 +68,16 @@ class KB_Data {
         public $action_seq;
         public $event_seq;
         public $location_seq;
+        public $event_seeds;
+        public $location_seeds;
 
         //constructor
-        public function __construct($action_seq, $event_seq, $location_seq){
+        public function __construct($action_seq, $event_seq, $location_seq, $event_seeds, $location_seeds){
           $this->action_seq = $action_seq;
           $this->event_seq = $event_seq;
           $this->location_seq = $location_seq;
+          $this->event_seeds = $event_seeds;
+          $this->location_seeds = $location_seeds;
         }
 }
 
@@ -357,18 +358,13 @@ class EventCon {
 
      /*
       * @param id of the event to return
-      * @return action with the specified event_id
+      * @return event with the specified event_id
       * TODO sanitise the ID passed in?
       * TODO Move to StoryMaker class
       */
      public function getEventByID($event_id){
-       $eventStatement = "SELECT event.*
-                          , ec.brief AS con_brief
-                          , ec.long_desc AS con_long
-                          , ec.tone AS con_tone
-                          FROM event
-                          JOIN event_consequence ec ON event.consequence = ec.con_id
-                          WHERE event.event_id = ".$event_id.";";
+       global $eventStatementGet;
+       $eventStatement =  $eventStatementGet." WHERE event.event_id = ".$event_id.";";
        return $this->reflectSM->getEvent($eventStatement);
      }
 
@@ -377,15 +373,36 @@ class EventCon {
      * eventCycle should get
      */
     public function pickRandomEvent(){
-      $eventStatement = "SELECT event.*
-                         , ec.brief AS con_brief
-                         , ec.long_desc AS con_long
-                         , ec.tone AS con_tone
-                         FROM event
-                         JOIN event_consequence ec ON event.consequence = ec.con_id
-                         ORDER BY RAND() LIMIT 1;";
+      global $eventStatementGet;
+      $eventStatement =  $eventStatementGet." ORDER BY RAND() LIMIT 1;";
       return $this->reflectSM->getEvent($eventStatement);
     }
+
+    /*
+     * @param id of the location to return
+     * @return location with the specified location_id
+     * TODO sanitise the ID passed in?
+     * TODO Move to StoryMaker class
+     */
+    public function getLocationByID($loc_id){
+      global $locationStatementGET;
+      $locationStatement = $locationStatementGET." WHERE location.loc_id = ".$loc_id.";";
+
+      //Return a location
+      return $this->reflectSM->getLocation($locationStatement);
+    }
+
+   /*
+    * Pick a new event at random and return it
+    * eventCycle should get
+    */
+   public function pickRandomLocation(){
+     global $locationStatementGET;
+     $locationStatement = $locationStatementGET."ORDER BY RAND() LIMIT 1;";
+
+     //Return a location
+     return $this->reflectSM->getLocation($locationStatement);
+   }
  }
 
 
@@ -568,6 +585,40 @@ class StoryMaker {
     if($sizeE == 0){
       return false;
     }
+   }
+
+   /*
+    * @param the table to check the element exists in
+    * @param the id of the element to check for
+    * @return true if the element exists, else false
+    */
+   public function checkExists($table, $value){
+     /*Include the global queries variables*/
+     global $checkExistsEvent, $checkExistsAction, $checkExistsLocation;
+     //Quick sanity check of $value
+     if($value == '' || $value == ', '){
+       return false;
+     }
+
+     if($table == 'event'){
+       $base = $checkExistsEvent;
+     }
+     elseif ($table == 'action') {
+       $base = $checkExistsAction;
+     }
+     elseif ($table == 'location') {
+       $base = $checkExistsLocation;
+     }
+     $query = $base." ".$value.";";
+     $result = executeQuery($query);
+     $size = count($result);
+
+     if($size != 0){
+       return true;
+     }
+     if($size == 0){
+       return false;
+     }
    }
 
    /*

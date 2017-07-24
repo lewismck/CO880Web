@@ -1,7 +1,7 @@
 <?php
 /*------------------------------------
   Main server side business logic kept
-  here. 
+  here.
   Execute server side code and echo
   the results as JSON objects for the
   browser to manipulate and display
@@ -23,10 +23,7 @@ if (!$conn){
    die("Connection failed: " .  conn_connect_error());
  }
 
- /*Functions based on params....*/
- //Have a setup function that gets called if func = setup
- //Sets the KB variables so that the JS can n-gram and markov process them runs onload in mainTest()
- //parse params and get function required - Loop over params and assign them to variables. Return the function to call.
+ /*parse params and get function required - Loop over params and assign them to variables. Return the function to call.*/
 $main = new Main();
 $params = $main->parseParams($_GET);
 
@@ -38,9 +35,42 @@ if($params->func == 'setup'){
   $kbData = $main->setup();
   echo "Params->func: ".$params->func."<br>";
 
+  //TODO put this all in one echo
   echo "<script> var ev_seq_kb = '".$kbData->event_seq."';</script>";
   echo "<script> var ac_seq_kb = '".$kbData->action_seq."';</script>";
   echo "<script> var loc_seq_kb = '".$kbData->location_seq."';</script>";
+
+  $eventCount = count($kbData->event_seeds);
+  $locationCount = count($kbData->location_seeds);
+
+  echo "<label>Action Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ac_cycle_count\"></input><br>";
+  if($eventCount != 0){
+    echo "<label>Event Seed: </label><select id='ev_seed'>";
+    foreach ($kbData->event_seeds as $row) {
+      echo "<option value='".$row['event_id'].",'>".$row['brief']."</option>";
+    }
+    echo "</select><br>";
+  }
+  echo "<label>Event Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ev_cycle_count\"></input><br>";
+  if($locationCount != 0){
+    echo "<label>Location Seed: </label><select id='loc_seed'>";
+    foreach ($kbData->location_seeds as $row) {
+      echo "<option value='".$row['loc_id'].",'>".$row['name']."</option>";
+    }
+    echo "</select><br>";
+  }
+	echo "<label>Location Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"loc_cycle_count\"></input><br>
+    <label>Allow Doppelgangers: </label>
+  	<select name=\"no_dop\"  id=\"no_dop\">
+  		<option value=\"1\" selected>True</option>
+  		<option value=\"0\">False</option>
+  	</select><br>
+  	<label>Respect Death: </label>
+  	<select name=\"respect_death\"  id=\"rd\">
+  		<option value=\"1\" selected>True</option>
+  		<option value=\"0\">False</option>
+  	</select><br>";
+
 }
 
 /*------------------------------------
@@ -51,13 +81,17 @@ if($params->func == 'setup'){
 -------------------------------------*/
 //TODO Have event_sequence and action_sequence and location_sequence objects storing the
 //story data in comma separated lists to use in a 'NOT IN' statement to remove duplicate actions
-//When storing the data in the stories table in SQL replace comma
+//When storing the data in the stories table in SQL replace comma?
 elseif ($params->func == 'getStory') {
   //make a StoryMaker object
   $sm = new StoryMaker();
   //make a new ReflectionCycle
   $rc = new ReflectionCycle($sm);
-
+  echo "<script>
+          var locArray = [];
+          var eventArray = [];
+          var actionArray = [];
+        </script>";
   /*-------------------
     Generate Characters
   --------------------*/
@@ -72,7 +106,7 @@ elseif ($params->func == 'getStory') {
   }
   //Display some Character Details
   echo "<h3>Characters</h3>".$char1->describe()."<br>".$char2->describe()."<br>";
-
+  //TODO rewrite for loops (esp for location and event as a function in main/sm?)
   /*-----------------
     Generate Actions
   ------------------*/
@@ -81,7 +115,10 @@ elseif ($params->func == 'getStory') {
     //Create a new action
     $currentAction = $rc->actionCycleCM($char1, $char2);
     $passableAction = json_encode($currentAction);
-    echo "<script>var action".$i." = ".$passableAction.";</script>";
+    echo "<script>
+            var action".$i." = ".$passableAction.";
+            actionArray.push(".$passableAction.");
+          </script>";
     //Print details
     echo $char1->firstname." ".$currentAction->brief." ".$char2->firstname.".<br>";
     echo "So ".$char1->firstname." ".$currentAction->conBrief." ".$char2->firstname.".<br>";
@@ -89,19 +126,21 @@ elseif ($params->func == 'getStory') {
     echo $char2->firstname." emotional state: ".$char2->es_desc."(".$char2->emotional_state.")<br>";
 
     /*Update the character arcs*/
-    $char1->arc_es.=" ".$char1->emotional_state;
-    $char2->arc_es.=" ".$char2->emotional_state;
+    $char1->arc_es.=", ".$char1->emotional_state;
+    $char2->arc_es.=", ".$char2->emotional_state;
     //If resepect_death is set
-    //Check if anyone's dead
-    if ($currentAction->is_dead !== 'x') {
-      if($currentAction->is_dead == 'c1'){
-        $char1->isAlive = false;
+    if($params->respect_death == '1'){
+      //Check if anyone's dead
+      if ($currentAction->is_dead !== 'x') {
+        if($currentAction->is_dead == 'c1'){
+          $char1->kill();
+        }
+        else {
+          $char2->kill();
+        }
+        echo "A character (".$currentAction->is_dead.") is Dead! Cycle stopped.";
+        break;
       }
-      else {
-        $char2->kill();
-      }
-      echo "A character (".$currentAction->is_dead.") is Dead! Cycle stopped.";
-      break;
     }
   }
   /*-----------------------------------
@@ -112,13 +151,20 @@ elseif ($params->func == 'getStory') {
    //JSON encode the characters for use in the browser
    $passableChar1 = json_encode($char1);
    $passableChar2 = json_encode($char2);
-   echo "<script>var char1 = ".$passableChar1.";
-                 var char2 = ".$passableChar2.";</script>";
+   echo "<script>
+            var char1 = ".$passableChar1.";
+            var char2 = ".$passableChar2.";
+         </script>";
 
   /*---------------
     Generate Events
   -----------------*/
-  $len = strlen($params->ev_seq); //Quick check to see if the Markov chain is shorter then the requested number of events
+  //Turn the markov chain into an array
+  $eventArray = explode(",", $params->ev_seq);
+  //Quick check to see if the Markov chain is shorter then the requested number of events
+  $len = count($eventArray)-1;//Remove the last empty element after the comma
+  // echo $len."<br>";
+  // var_dump($eventArray);
   if($len < $params->ev_cycle_count){
     echo "Short Markov chain generated!<br>";
     $limit = $len;
@@ -128,19 +174,78 @@ elseif ($params->func == 'getStory') {
   }
 
   //Create the required number of events echo them and return them as JSON objects
-  for ($i=0; $i < $limit; $i++) {
-    $event_id = $params->ev_seq[$i];
+  for ($i=0; $i <= $limit-1; $i++) {
+    $event_id = $eventArray[$i];
+
     //Error handling if there's a missing element/event is null/anything
-    echo "<h3>Event ".$i.":</h3>";
+    $exists = $sm->checkExists('event', $event_id);
     //Create a new event
-    $currentEvent = $rc->getEventByID($event_id);
+    if($exists == true){
+      $currentEvent = $rc->getEventByID($event_id);
+    }
+    //Pick a random event if there is one missing from the Markov chain
+    elseif ($exists == false) {
+      $currentEvent = $rc->pickRandomEvent();
+    }
+
+    //echo details
+    echo "<h3>Event ".$i.":</h3>";
     echo "Event ID: ".$event_id."<br>";
     echo "Event: ".$currentEvent->brief."<br>";
     echo "Event Consequence: ".$currentEvent->conBrief."<br>";
     //return a JSON object for the browser
     $passableEvent = json_encode($currentEvent);
-    echo "<script>var event".$i." = ".$passableEvent.";</script>";
+    echo "<script>
+            var event".$i." = ".$passableEvent.";
+            eventArray.push(".$passableEvent.");
+          </script>";
   }
+
+  /*------------------
+    Generate Locations
+  -------------------*/
+  //Turn the markov chain into an array
+  $locationArray = explode(",", $params->loc_seq);
+  //Quick check to see if the Markov chain is shorter then the requested number of events
+  $len = count($locationArray)-1;//Remove the last empty element after the comma
+  // echo $len."<br>";
+  // var_dump($eventArray);
+  if($len < $params->loc_cycle_count){
+    echo "Short Markov chain generated!<br>";
+    $limit = $len;
+  }
+  else{
+    $limit = $params->ev_cycle_count;
+  }
+
+  //Create the required number of events echo them and return them as JSON objects
+  for ($i=0; $i <= $limit-1; $i++) {
+    $location_id = $locationArray[$i];
+
+    //Error handling if there's a missing element/event is null/anything
+    $exists = $sm->checkExists('location', $location_id);
+    //Create a new event
+    if($exists == true){
+      $currentLocation = $rc->getLocationByID($location_id);
+    }
+    //Pick a random event if there is one missing from the Markov chain
+    elseif ($exists == false) {
+      $currentLocation = $rc->pickRandomLocation();
+    }
+
+    //echo details
+    echo "<h3>Location ".$i.":</h3>";
+    echo "Location ID: ".$currentLocation->id."<br>";
+    echo "Name: ".$currentLocation->name."<br>";
+    echo "Description: ".$currentLocation->brief."<br>";
+    //return a JSON object for the browser
+    $passableLocation = json_encode($currentLocation);
+    echo "<script>
+            var loc".$i." = ".$passableLocation.";
+            locArray.push(".$passableLocation.");
+          </script>";
+  }
+
   echo "<h3>Params:</h3>";
   foreach ($params as $key => $value) {
     echo "Key: $key Value: $value <br>";
@@ -156,19 +261,6 @@ else{
 //check if params->func = 'setup'
 //if so run setup echo the JS variables
 //in callback success action make ngrams of them and assign them to variables.
-
-
-
-// $sm = new StoryMaker();
-// $rc = new ReflectionCycle($sm);
-//
-// $char1 = $sm->makeCharacter();
-// $passableChar = json_encode($char1);
-//
-// $action1 = $rc->getActionByID(1);
-// $passableAction = json_encode($action1);
-// echo "<script>var passableA = ".$passableAction.";</script>";
-// echo "<script>var passableChar = ".$passableChar.";</script>";
 
 //Have event_sequence, location_sequence and action_sequence variables to append to as the functions run...
 //return all story elements as json objects for processing by the frontend... can evaluate/process them in the success action in the AJAX request

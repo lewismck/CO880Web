@@ -1,5 +1,5 @@
 /*Mostly AJAX functions which call getstory.php or are called during getstory.php's operation*/
-
+  //var locArray = [];
 /*
  * Calls a php script that returns a randomly generated story outline.
  * kb parameter to potentially be used as a flag to indicate whether to
@@ -31,7 +31,7 @@ function mainSetup() {
       url: "ajax/php/main.php?func=setup",
       dataType: "html",
       success: function(response){
-            $("#storyBox").html(response);
+            $("#storyParams").html(response);
       }
     });
 }
@@ -50,32 +50,45 @@ function mainSetup() {
  * @return
  */
 function getStory() {
-  var ev_cycle = $("#ev_cycle").val();
+  var ev_cycle_count = ($("#ev_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
   var ev_seed = $("#ev_seed").val();
-  var ac_cycle = $("#ac_cycle").val();
+  var loc_cycle_count = ($("#loc_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
+  var loc_seed = $("#loc_seed").val();
+  var ac_cycle_count = $("#ac_cycle_count").val();
   var no_dop = $("#no_dop").val();
-  var ev_n_grams = makeNgrams(ev_seq_kb, 1);
-  var ev_seq = markovIt(ev_seed, ev_n_grams, 1, ev_cycle);
+  var rd = $("#rd").val();
+  //Build Markov chains of the requested story components
+  /*Event*/
+  var ev_n_grams = makeNgrams(ev_seq_kb, 2);
+  var ev_seq = markovIt(ev_seed, ev_n_grams, 2, ev_cycle_count);
+  /*Location*/
+  var loc_n_grams = makeNgrams(loc_seq_kb, 2);
+  var loc_seq = markovIt(loc_seed, loc_n_grams, 2, loc_cycle_count);
   //$("#storyBox").html("<h3><strong>Testing...</strong></h3>");
   //var charcount = $("#charcount").val();
     $.ajax({
       type: "GET",
-      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&ev_cycle_count="+ev_cycle+"&ac_cycle_count="+ac_cycle+"&no_dop="+no_dop,
+      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&ev_cycle_count="+ev_cycle_count+"&ac_cycle_count="+ac_cycle_count+"&no_dop="+no_dop+"&rd="+rd+"&loc_cycle_count="+loc_cycle_count+"&loc_seq="+loc_seq,
       dataType: "html",
       success: function(response){
             $("#storyBox").html(response);
+            makeOutLine($("#loc_cycle_count").val());
       }
     });
 }
 
+function makeOutLine(n){
+  for(var i = 0; i <= n; i++){
+      $("#outlineBox").append(locArray[i].brief+"<br>");
+  }
+}
 
 /**
-  * TODO Write a checkElementExists() function that will check the returned ID from the markovIt function
-  * exists in the KB and can be used for processing 
+  * exists in the KB and can be used for processing
   * MARKOV and N-Gram code
   * Function to make N-Grams of a string returns arrays
   * Function to generate an n length sequence given a set of N-Grams
- **/
+  **/
  function makeNgrams(src, n){
    var ngrams = {};
 
