@@ -33,12 +33,14 @@ $params = $main->parseParams($_GET);
  */
 if($params->func == 'setup'){
   $kbData = $main->setup();
-  echo "Params->func: ".$params->func."<br>";
+  // echo "Params->func: ".$params->func."<br>";
 
-  //TODO put this all in one echo
-  echo "<script> var ev_seq_kb = '".$kbData->event_seq."';</script>";
-  echo "<script> var ac_seq_kb = '".$kbData->action_seq."';</script>";
-  echo "<script> var loc_seq_kb = '".$kbData->location_seq."';</script>";
+  //Echo the data from the knowledge base that the n-gram and markov functions need
+  echo "<script>
+          var ev_seq_kb = '".$kbData->event_seq."';
+          var ac_seq_kb = '".$kbData->action_seq."';
+          var loc_seq_kb = '".$kbData->location_seq."';
+        </script>";
 
   $eventCount = count($kbData->event_seeds);
   $locationCount = count($kbData->location_seeds);
@@ -79,19 +81,18 @@ if($params->func == 'setup'){
   with sequentially named variables
   eg. event0, event1 .. eventX
 -------------------------------------*/
-//TODO Have event_sequence and action_sequence and location_sequence objects storing the
-//story data in comma separated lists to use in a 'NOT IN' statement to remove duplicate actions
-//When storing the data in the stories table in SQL replace comma?
 elseif ($params->func == 'getStory') {
   //make a StoryMaker object
   $sm = new StoryMaker();
   //make a new ReflectionCycle
   $rc = new ReflectionCycle($sm);
+  //Initialise some javascript arrays for storing the stor details as they occur
   echo "<script>
           var locArray = [];
           var eventArray = [];
           var actionArray = [];
         </script>";
+
   /*-------------------
     Generate Characters
   --------------------*/
@@ -125,10 +126,8 @@ elseif ($params->func == 'getStory') {
     echo $char1->firstname." emotional state: ".$char1->es_desc." (".$char1->emotional_state.")<br>";
     echo $char2->firstname." emotional state: ".$char2->es_desc."(".$char2->emotional_state.")<br>";
 
-    /*Update the character arcs*/
-    $char1->arc_es.=", ".$char1->emotional_state;
-    $char2->arc_es.=", ".$char2->emotional_state;
-    //If resepect_death is set
+
+    //If resepect_death is set - check if anyone has died
     if($params->respect_death == '1'){
       //Check if anyone's dead
       if ($currentAction->is_dead !== 'x') {
@@ -162,9 +161,7 @@ elseif ($params->func == 'getStory') {
   //Turn the markov chain into an array
   $eventArray = explode(",", $params->ev_seq);
   //Quick check to see if the Markov chain is shorter then the requested number of events
-  $len = count($eventArray)-1;//Remove the last empty element after the comma
-  // echo $len."<br>";
-  // var_dump($eventArray);
+  $len = count($eventArray);//Remove the last empty element after the comma
   if($len < $params->ev_cycle_count){
     echo "Short Markov chain generated!<br>";
     $limit = $len;
@@ -176,8 +173,7 @@ elseif ($params->func == 'getStory') {
   //Create the required number of events echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
     $event_id = $eventArray[$i];
-
-    //Error handling if there's a missing element/event is null/anything
+    //Error handling if there's a missing element/event is null/etc
     $exists = $sm->checkExists('event', $event_id);
     //Create a new event
     if($exists == true){
@@ -207,22 +203,18 @@ elseif ($params->func == 'getStory') {
   //Turn the markov chain into an array
   $locationArray = explode(",", $params->loc_seq);
   //Quick check to see if the Markov chain is shorter then the requested number of events
-  $len = count($locationArray)-1;//Remove the last empty element after the comma
-  // echo $len."<br>";
-  // var_dump($eventArray);
+  $len = count($locationArray);
   if($len < $params->loc_cycle_count){
     echo "Short Markov chain generated!<br>";
     $limit = $len;
   }
   else{
-    $limit = $params->ev_cycle_count;
+    $limit = $params->loc_cycle_count;
   }
-
   //Create the required number of events echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
     $location_id = $locationArray[$i];
-
-    //Error handling if there's a missing element/event is null/anything
+    //Error handling if there's a missing element/event is null/etc
     $exists = $sm->checkExists('location', $location_id);
     //Create a new event
     if($exists == true){
@@ -246,23 +238,20 @@ elseif ($params->func == 'getStory') {
           </script>";
   }
 
+  /*-------------
+    Echo Params
+   -------------*/
   echo "<h3>Params:</h3>";
   foreach ($params as $key => $value) {
     echo "Key: $key Value: $value <br>";
   }
 }
+
 else{
   //echo $params->func;
   var_dump($params);
   echo "url func: ".$_GET['func']."<br>";
   echo "Params->func: ".$params->func."<br>";
 }
-/*Setup*/
-//check if params->func = 'setup'
-//if so run setup echo the JS variables
-//in callback success action make ngrams of them and assign them to variables.
 
-//Have event_sequence, location_sequence and action_sequence variables to append to as the functions run...
-//return all story elements as json objects for processing by the frontend... can evaluate/process them in the success action in the AJAX request
-//Function calls like get_story(cycle, eventSeq)
  ?>

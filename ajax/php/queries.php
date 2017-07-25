@@ -10,28 +10,51 @@
   /*
    * Main queries
    */
-   $KBQuery = "SELECT
-                 GROUP_CONCAT(TRIM(event_sequence) SEPARATOR ',') event_seq
-               , GROUP_CONCAT(TRIM(action_sequence) SEPARATOR ',') action_seq
-               , GROUP_CONCAT(TRIM(location_sequence) SEPARATOR ',') location_seq
-               FROM evaluated_story es
-               WHERE es.rating = 'g';";
+  $KBQuery = "SELECT
+               GROUP_CONCAT(TRIM(event_sequence) SEPARATOR ',') event_seq
+             , GROUP_CONCAT(TRIM(action_sequence) SEPARATOR ',') action_seq
+             , GROUP_CONCAT(TRIM(location_sequence) SEPARATOR ',') location_seq
+             FROM evaluated_story es
+             WHERE es.rating = 'g';";
 
-   $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";
+  $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";//TODO check the seeds all exist in the evaluated story table
 
-   $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";
+  $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";//TODO check the seeds all exist in the evaluated story table
+
   /*
-   *StoryMaker queries
-   *
-   */
-  $eventStatementGet = "SELECT event.*
-                       , ec.brief AS con_brief
-                       , ec.long_desc AS con_long
-                       , ec.tone AS con_tone
-                       FROM event
-                       JOIN event_consequence ec ON event.consequence = ec.con_id ";
+  * ReflectionCycle queries
+  *
+  */
+  $actionStatementGet = "SELECT action.*
+                        , ac.brief AS con_brief
+                        , ac.long_desc AS con_long
+                        , ac.tone AS con_tone
+                        , ac.c1_es
+                        , ac.c2_es
+                        , ac.c1_es_desc
+                        , ac.c2_es_desc
+                        , ac.is_dead
+                        FROM action
+                        JOIN action_consequence ac ON action.consequence=ac.con_id ";
 
-  $locationStatementGET = "SELECT * FROM location ";
+  /*
+  *StoryMaker queries
+  *
+  */
+  $eventStatementGet = "SELECT event.*
+                        , ec.brief AS con_brief
+                        , ec.long_desc AS con_long
+                        , ec.tone AS con_tone
+                        FROM event
+                        JOIN event_consequence ec ON event.consequence = ec.con_id ";
+
+  $locationStatementGet = "SELECT * FROM location ";
+
+  $characterStatementGet = "SELECT
+                            s_character.*
+                            , cd.age
+                            , cd.temperment FROM s_character
+                            JOIN character_desc cd ON s_character.c_desc=cd.desc_id ";
 
   $checkExistsEvent = "SELECT e.event_id
                        FROM event e

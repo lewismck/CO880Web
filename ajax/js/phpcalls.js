@@ -64,24 +64,108 @@ function getStory() {
   /*Location*/
   var loc_n_grams = makeNgrams(loc_seq_kb, 2);
   var loc_seq = markovIt(loc_seed, loc_n_grams, 2, loc_cycle_count);
-  //$("#storyBox").html("<h3><strong>Testing...</strong></h3>");
   //var charcount = $("#charcount").val();
     $.ajax({
       type: "GET",
-      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&ev_cycle_count="+ev_cycle_count+"&ac_cycle_count="+ac_cycle_count+"&no_dop="+no_dop+"&rd="+rd+"&loc_cycle_count="+loc_cycle_count+"&loc_seq="+loc_seq,
+      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&ev_cycle_count="+$("#ev_cycle_count").val()+"&ac_cycle_count="+ac_cycle_count+"&no_dop="+no_dop+"&rd="+rd+"&loc_cycle_count="+$("#loc_cycle_count").val()+"&loc_seq="+loc_seq,
       dataType: "html",
       success: function(response){
             $("#storyBox").html(response);
-            makeOutLine($("#loc_cycle_count").val());
+            printOutline2();
+            //printActionCycle();
+            printLocations($("#loc_cycle_count").val()-1);
+            $('[data-toggle="tooltip"]').tooltip();
       }
     });
 }
 
-function makeOutLine(n){
-  for(var i = 0; i <= n; i++){
-      $("#outlineBox").append(locArray[i].brief+"<br>");
+
+/*
+ * Print an outline of the story
+ */
+function printOutline2(){
+  var shortestCycle = '';
+  var shortestCycleCount = Math.min(locArray.length, actionArray.length, eventArray.length);
+  if (shortestCycleCount = locArray.length){
+    shortestCycle = 'loc';
+  }
+  else if (shortestCycleCount = actionArray.length) {
+    shortestCycle = 'action';
+  }
+  else {
+    shortestCycle = 'event';
+  }
+
+  $("#outlineBox").html(''); //clear the outline box
+
+  for(i = 0; i <= shortestCycleCount-1; i++){
+    //Split the characters emotional states up into an array to display alongside each action
+    var c1_es_array = char1.arc_desc.split(",");
+    var c2_es_array = char2.arc_desc.split(",");
+    //Assign some character variables for showing their data
+    var char1Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+char1.temperment+" Mood: "+c1_es_array[i+1]+"'>"+char1.firstname+"</a>";
+    var char2Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+char2.temperment+" Mood: "+c2_es_array[i+1]+"'>"+char2.firstname+"</a>";
+    //Assign action and consequence variables
+    var actionInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].longDesc+"'>"+actionArray[i].brief+"</a>";
+    var acConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].conBrief+"'>"+actionArray[i].conBrief+"</a>";
+    //Assign event and consequence variables
+    var eventInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].longDesc+"'>"+eventArray[i].brief+"</a>";
+    var evConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].conBrief+"'>"+eventArray[i].conBrief+"</a>";
+    //Locations
+    locationInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+locArray[i].brief+"'>"+locArray[i].name+"</a>";
+
+    //Print the data linked together in order
+    $("#outlineBox").append(eventInfo +" at " + locationInfo
+    + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
+    +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
+    + ". As " + evConseqenceInfo + ".<br><br>");
+      //event.brief + " at the " + loc.name + " Meanwhile " char1Info + " " + actionInfo + " " + char2Info + " " + conseqenceInfo + ". As " + event.conBrief
+
+  }
+  //if the shortestCycleCount is less than the longest then run the other attributes calling their printXcycle functions and providing an offset
+
+}
+
+/*
+ * Display the generated action cycle to the user
+ */
+function printActionCycle(){
+  var n = actionArray.length;//Check the actual length of the returned array in case respect death is toggled and a character died before the action cycle limit was reached
+  //$("#outlineBox").html(''); //clear the outline box
+
+  //Loop through the actions printing what happens
+  for(var i = 0; i <= n-1; i++){
+    //Split the characters emotional states up into an array to display alongside each action
+    var c1_es_array = char1.arc_desc.split(",");
+    var c2_es_array = char2.arc_desc.split(",");
+    //Assign some character variables for showing their data
+    var char1Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+char1.temperment+" Mood: "+c1_es_array[i+1]+"'>"+char1.firstname+"</a>";
+    var char2Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+char2.temperment+" Mood: "+c2_es_array[i+1]+"'>"+char2.firstname+"</a>";
+    //Assign action and consequence variables
+    var actionInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].longDesc+"'>"+actionArray[i].brief+"</a>";
+    var conseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].conBrief+"'>"+actionArray[i].conBrief+"</a>";
+
+    //Print the data linked together in order
+    $("#outlineBox").append(char1Info+" "+actionInfo+" "+char2Info
+    +". <br>So "+char1Info+" "+conseqenceInfo+" "+char2Info+".<br><br>");
   }
 }
+
+/*
+ *
+ */
+function printLocations(n){
+  //$("#outlineBox").html('');
+  for(var i = 0; i <= n; i++){
+      var currentLocation = new Object()
+      currentLocation = locArray[i];
+      locIdentifier = 'l';
+      $("#outlineBox").append("<a href='#' data-toggle='tooltip' data-placement='top' title='"+currentLocation.brief+"'>"+currentLocation.name+"</a><br>");
+      //"<a class='text-success' onclick='showDetails("+currentLocation+","+i+","+locIdentifier+");' style='cursor: pointer;'>"+currentLocation.name+"</a><br><br><div id='locationInfo"+i+"'></div>"
+  }
+}
+
+
 
 /**
   * exists in the KB and can be used for processing
@@ -115,10 +199,8 @@ function makeOutLine(n){
      result += next;
      var len = result.length;
      currentGram = result.substring(len-n, len);
-     //console.log(result);
    }
    console.log(result);
-   //$("#resultBox").append(result+"<br>");
    return result;
  }
 

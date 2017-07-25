@@ -9,6 +9,7 @@ class Main {
    */
   public function setup(){
 
+    //Use the global queries from queries.php
     global $KBQuery, $eventSeedGet, $locationSeedGet;
 
 
@@ -109,7 +110,7 @@ class ParsedParams {
              public $temperment;
              public $emotional_state = 0;
              public $es_desc = 'x';
-             public $arc_es = '';
+             public $arc_es = '0';
              public $arc_desc = '';
 
              // Assigning the values
@@ -138,6 +139,9 @@ class ParsedParams {
              public function updateES($emotional_state, $es_desc){
                $this->emotional_state = $this->emotional_state + $emotional_state;
                $this->es_desc = $es_desc;
+               /*Update the character arcs*/
+               $this->arc_es.=", ".$this->emotional_state;
+               $this->arc_desc.=",".$es_desc;
              }
   }
 
@@ -198,18 +202,15 @@ class ActionCon {
   //constructor
   public function __construct($id, $brief, $longDesc, $tone){
     $this->id = $id;
-    //$this->name = $name;
     $this->brief = $brief;
     $this->longDesc = $longDesc;
     $this->tone = $tone;
-  //  $this->ac_id = $ac_id;
   }
 
  }
 
 class Event {
       public $id;
-      //public $name;
       public $brief;
       public $longDesc;
       public $tone;
@@ -219,7 +220,6 @@ class Event {
       //constructor
       public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief){
         $this->id = $id;
-      //  $this->name = $name;
         $this->brief = $brief;
         $this->longDesc = $longDesc;
         $this->tone = $tone;
@@ -239,11 +239,9 @@ class EventCon {
   //constructor
   public function __construct($id, $brief, $longDesc, $tone){
     $this->id = $id;
-    //$this->name = $name;
     $this->brief = $brief;
     $this->longDesc = $longDesc;
     $this->tone = $tone;
-    //$this->event_id = $event_id;
    }
 
  }
@@ -262,9 +260,7 @@ class EventCon {
     $this->reflectSM = $reflectSM;
   }
 
-   //Create an instance of the StoryMaker class to use for reflection cycles
-   //$reflectSM = new StoryMaker();
-    /*
+     /*
      *TODO refactor actionCycle and eventCycle functions to have generic private
      * functions that they call and different parameters or event/actionCycle
      * functions that set the rulesets used e.g. one for using Markov - one for
@@ -276,10 +272,12 @@ class EventCon {
       * TODO refactor so only 1 return ...
       * @param char1 a person object type
       * @param char2 a person object type
-      * @Return an action - can use the action to update c1_es and c2_es
+      * @Return an action - also updates c1_es and c2_es and arcs
       * Then run cycle again - can be done in a loop in another function
       */
     public function actionCycleCM($char1, $char2){
+      //Use the global queries
+      global $actionStatementGet;
       //If both characters have an equal emotional_state or have none set then just select an action at random
       if($char1->emotional_state == $char2->emotional_state){
         $currentAction = $this->pickRandomAction();
@@ -297,19 +295,7 @@ class EventCon {
       else {
         $whereCondition = "WHERE ac.c2_es > 0"; //could be >= ??
       }
-      $actionStatement = "SELECT action.*
-                          , ac.brief AS con_brief
-                          , ac.long_desc AS con_long
-                          , ac.tone AS con_tone
-                          , ac.c1_es
-                          , ac.c2_es
-                          , ac.c1_es_desc
-                          , ac.c2_es_desc
-                          , ac.is_dead
-                          FROM action
-                          JOIN action_consequence ac ON action.consequence=ac.con_id ".
-                          $whereCondition.
-                          " ORDER BY RAND() LIMIT 1;";
+      $actionStatement = $actionStatementGet.$whereCondition." ORDER BY RAND() LIMIT 1;";
       $currentAction = $this->reflectSM->getAction($actionStatement);
       //update character states
       $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
@@ -323,36 +309,16 @@ class EventCon {
      * TODO sanitise the ID passed in?
      */
      public function getActionByID(int $ac_id){
-       $actionStatement = "SELECT action.*
-                           , ac.brief AS con_brief
-                           , ac.long_desc AS con_long
-                           , ac.tone AS con_tone
-                           , ac.c1_es
-                           , ac.c2_es
-                           , ac.c1_es_desc
-                           , ac.c2_es_desc
-                           , ac.is_dead
-                           FROM action
-                           JOIN action_consequence ac ON action.consequence=ac.con_id
-                           AND action.ac_id = ".$ac_id." ;";
+        global $actionStatementGet;
+        $actionStatement = $actionStatementGet."AND action.ac_id = ".$ac_id." ;";
         return $this->reflectSM->getAction($actionStatement);
      }
     /*
      * Pick an action at random and return it
      */
      private function pickRandomAction(){
-       $actionStatement = "SELECT action.*
-        , ac.brief AS con_brief
-        , ac.long_desc AS con_long
-        , ac.tone AS con_tone
-        , ac.c1_es
-        , ac.c2_es
-        , ac.c1_es_desc
-        , ac.c2_es_desc
-        , ac.is_dead
-        FROM action
-        JOIN action_consequence ac ON action.consequence=ac.con_id
-        ORDER BY RAND() LIMIT 1;";
+        global $actionStatementGet;
+        $actionStatement = $actionStatementGet."ORDER BY RAND() LIMIT 1;";
         return $this->reflectSM->getAction($actionStatement);
      }
 
@@ -385,8 +351,8 @@ class EventCon {
      * TODO Move to StoryMaker class
      */
     public function getLocationByID($loc_id){
-      global $locationStatementGET;
-      $locationStatement = $locationStatementGET." WHERE location.loc_id = ".$loc_id.";";
+      global $locationStatementGet;
+      $locationStatement = $locationStatementGet." WHERE location.loc_id = ".$loc_id.";";
 
       //Return a location
       return $this->reflectSM->getLocation($locationStatement);
@@ -397,8 +363,8 @@ class EventCon {
     * eventCycle should get
     */
    public function pickRandomLocation(){
-     global $locationStatementGET;
-     $locationStatement = $locationStatementGET."ORDER BY RAND() LIMIT 1;";
+     global $locationStatementGet;
+     $locationStatement = $locationStatementGet."ORDER BY RAND() LIMIT 1;";
 
      //Return a location
      return $this->reflectSM->getLocation($locationStatement);
@@ -407,7 +373,7 @@ class EventCon {
 
 
 /*
- * Currently not in use...JS implementation used instead in AJAX call
+ * Currently deprecated...JS implementation used instead in AJAX call
  *
  */
  class Markov {
@@ -455,24 +421,10 @@ class StoryMaker {
    * Make a random character and return an object of type Person
    */
    public function makeCharacter(){
-     $characterStatement = "SELECT
-                              s_character.*
-                            , cd.age
-                            , cd.temperment FROM s_character
-                           JOIN character_desc cd ON s_character.c_desc=cd.desc_id
-                           ORDER BY RAND() LIMIT 1;";
-     $resultC = executeQuery($characterStatement);
-     $sizeC = count($resultC);
+     global $characterStatementGet;
+     $characterStatement = $characterStatementGet." ORDER BY RAND() LIMIT 1;";
 
-     if($sizeC != 0){
-
-       foreach ($resultC as $rowC) {
-         //Create a person object for each selected character with a person1...X naming scheme
-         return new Person($rowC['c_id'], $rowC['fName'], $rowC['lName'], $rowC['gender'], $rowC['c_desc'], $rowC['age'], $rowC['temperment']);
-       }
-     }
-     if($sizeC == 0){}
-       return false;
+     return $this->returnCharacter($characterStatement);
    }
 
    /*
@@ -481,12 +433,30 @@ class StoryMaker {
     * Make a character based on the ID return an object of type Person (chooses attributes logically)
     */
     public function getCharacterByID($c_id){
-      $characterStatement = "SELECT
-                               s_character.*
-                             , cd.age
-                             , cd.temperment FROM s_character
-                            JOIN character_desc cd ON s_character.c_desc=cd.desc_id
-                            WHERE s_character.c_id = ".$c_id.";";
+      global $characterStatementGet;
+      $characterStatement = $characterStatementGet." WHERE s_character.c_id = ".$c_id.";";
+
+      return $this->returnCharacter($characterStatement);
+    }
+
+    /*
+     * @param the id of the character NOT to create
+     * @return a person object
+     * Make a random character who isn't identified by the ID. Return an object of type Person (chooses attributes logically)
+     */
+     public function getCharacterWhoIsnt($c_id){
+       global $characterStatementGet;
+       $characterStatement = $characterStatementGet." WHERE s_character.c_id != ".$c_id." ORDER BY RAND() LIMIT 1;";
+
+       return $this->returnCharacter($characterStatement);
+     }
+
+   /*
+    * @param a SQL statement returning the character constructor attributes
+    * @return a character using the results returned by the statement or false
+    *
+    */
+    public function returnCharacter($characterStatement){
       $resultC = executeQuery($characterStatement);
       $sizeC = count($resultC);
 
@@ -497,36 +467,10 @@ class StoryMaker {
           return new Person($rowC['c_id'], $rowC['fName'], $rowC['lName'], $rowC['gender'], $rowC['c_desc'], $rowC['age'], $rowC['temperment']);
         }
       }
-      if($sizeC == 0){}
+      if($sizeC == 0){
         return false;
+      }
     }
-
-    /*
-     * @param the id of the character NOT to create
-     * @return a person object
-     * Make a random character who isn't identified by the ID. Return an object of type Person (chooses attributes logically)
-     */
-     public function getCharacterWhoIsnt($c_id){
-       $characterStatement = "SELECT
-                                s_character.*
-                              , cd.age
-                              , cd.temperment FROM s_character
-                             JOIN character_desc cd ON s_character.c_desc=cd.desc_id
-                             WHERE s_character.c_id != ".$c_id."
-                             ORDER BY RAND() LIMIT 1;";
-       $resultC = executeQuery($characterStatement);
-       $sizeC = count($resultC);
-
-       if($sizeC != 0){
-
-         foreach ($resultC as $rowC) {
-           //Create a person object for each selected character with a person1...X naming scheme
-           return new Person($rowC['c_id'], $rowC['fName'], $rowC['lName'], $rowC['gender'], $rowC['c_desc'], $rowC['age'], $rowC['temperment']);
-         }
-       }
-       if($sizeC == 0){}
-         return false;
-     }
 
   /*
    * execute LOCATION statements
@@ -551,7 +495,7 @@ class StoryMaker {
 
   /*
    *execute ACTION statements
-   *Parameter is a sql query returning a row from action and
+   *@param a sql query returning a row from action and
    *the consequence from action_consequence as con_brief
    *query: action.*, action_consequence.brief AS con_brief
    */
