@@ -35,7 +35,7 @@
    markov_event int(1) DEFAULT 1,
    markov_location int(1) DEFAULT 1,
    markov_action int(1) DEFAULT 0,
-   n_gram_size int(10) DEFAULT 2,
+   n_gram_size int(2) DEFAULT 2,
    PRIMARY KEY (story_id)
  );
 /*

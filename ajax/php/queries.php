@@ -21,6 +21,12 @@
 
   $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";//TODO check the seeds all exist in the evaluated story table
 
+  $saveStoryInsert = "INSERT INTO evaluated_story (event_sequence, location_sequence, action_sequence, rating, respect_death, allow_doppelgangers) VALUES";
+
+  $getLatestStoryIDQuery = "SELECT story_id FROM evaluated_story WHERE story_id = (SELECT MAX(story_id) FROM evaluated_story);";
+
+  $updateStoryRating = "UPDATE evaluated_story es SET es.rating = ";
+
   /*
   * ReflectionCycle queries
   *

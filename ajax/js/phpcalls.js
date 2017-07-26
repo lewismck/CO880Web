@@ -50,6 +50,7 @@ function mainSetup() {
  * @return
  */
 function getStory() {
+  $("#outlineBox").html("Generating..");
   var ev_cycle_count = ($("#ev_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
   var ev_seed = $("#ev_seed").val();
   var loc_cycle_count = ($("#loc_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
@@ -73,8 +74,9 @@ function getStory() {
             $("#storyBox").html(response);
             printOutline2();
             //printActionCycle();
-            printLocations($("#loc_cycle_count").val()-1);
+            //printLocations($("#loc_cycle_count").val()-1);
             $('[data-toggle="tooltip"]').tooltip();
+            showEvaluateStory();
       }
     });
 }
@@ -84,6 +86,7 @@ function getStory() {
  * Print an outline of the story
  */
 function printOutline2(){
+  var rd = $("#rd").val();
   var shortestCycle = '';
   var shortestCycleCount = Math.min(locArray.length, actionArray.length, eventArray.length);
   if (shortestCycleCount = locArray.length){
@@ -103,14 +106,14 @@ function printOutline2(){
     var c1_es_array = char1.arc_desc.split(",");
     var c2_es_array = char2.arc_desc.split(",");
     //Assign some character variables for showing their data
-    var char1Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+char1.temperment+" Mood: "+c1_es_array[i+1]+"'>"+char1.firstname+"</a>";
-    var char2Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+char2.temperment+" Mood: "+c2_es_array[i+1]+"'>"+char2.firstname+"</a>";
+    var char1Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='Name: "+char1.firstname + " " + char1.lastname + " Description: "+char1.temperment+" Current Mood: "+c1_es_array[i+1]+"'>"+char1.firstname+"</a>";
+    var char2Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='Name: "+char2.firstname + " " +char2.lastname+ " Description: "+char2.temperment+" Current Mood: "+c2_es_array[i+1]+"'>"+char2.firstname+"</a>";
     //Assign action and consequence variables
     var actionInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].longDesc+"'>"+actionArray[i].brief+"</a>";
-    var acConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].conBrief+"'>"+actionArray[i].conBrief+"</a>";
+    var acConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].con_desc+"'>"+actionArray[i].conBrief+"</a>";
     //Assign event and consequence variables
     var eventInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].longDesc+"'>"+eventArray[i].brief+"</a>";
-    var evConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].conBrief+"'>"+eventArray[i].conBrief+"</a>";
+    var evConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].con_desc+"'>"+eventArray[i].conBrief+"</a>";
     //Locations
     locationInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+locArray[i].brief+"'>"+locArray[i].name+"</a>";
 
@@ -119,11 +122,39 @@ function printOutline2(){
     + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
     +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
     + ". As " + evConseqenceInfo + ".<br><br>");
-      //event.brief + " at the " + loc.name + " Meanwhile " char1Info + " " + actionInfo + " " + char2Info + " " + conseqenceInfo + ". As " + event.conBrief
 
+    //If a character has died and respect death is on stop
+    if((actionArray[i].is_dead != 'x') && rd == '1'){
+      break;
+    }
   }
   //if the shortestCycleCount is less than the longest then run the other attributes calling their printXcycle functions and providing an offset
 
+}
+
+function showEvaluateStory(){
+  $("#evaluateBox").html("<a class='btn btn-default' onclick=\"evaluateStory2('g', 'good');\">Good!</a><br><a class='btn btn-default' onclick=\"evaluateStory2('b', 'bad');\">bad!</a><br>")
+}
+
+function evaluateStory2(rating, rating_hr){
+  $("#evaluateBox").html("Evaluating...");
+  //set the story rating
+  story.rating = rating;
+  // var storyParams = [];
+  //
+  // for (var i in story){
+  //    storyParams.push(encodeURI(i) + "=" + encodeURI(story[i]));
+  // }
+
+  //Make request
+  $.ajax({
+    type: "GET",
+    url: "ajax/php/main.php?func=evaluateStory&rating="+rating+"&rating_hr="+rating_hr,
+    dataType: "html",
+    success: function(response){
+          $("#storyBox").append(response);
+    }
+  });
 }
 
 /*

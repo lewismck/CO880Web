@@ -55,13 +55,32 @@ class Main {
         $parsedParams->loc_seq = $value;
       }
       elseif($key == 'no_dop'){
-        $parsedParams->no_doppelgangers = $value;
+        $parsedParams->allow_doppelgangers = $value;
       }
       elseif($key == 'rd'){
         $parsedParams->respect_death = $value;
       }
+      elseif($key == 'rating'){
+        $parsedParams->rating = $value;
+      }
+      elseif($key == 'rating_hr'){
+        $parsedParams->rating_hr = $value;
+      }
+      // elseif ($key == 'story') {
+      //   $parsedParams->story = serialize($value);
+      // }
     }
     return $parsedParams;
+  }
+
+  public function rateLatestStory($rating){
+    global $getLatestStoryIDQuery, $updateStoryRating;
+    $latest_id_request = executeQuery($getLatestStoryIDQuery);
+    $latest_id = $latest_id_request[0]['story_id'];
+
+    $updateStatement = $updateStoryRating." '".$rating."' WHERE es.story_id =".$latest_id;
+    $result = executeInsert($updateStatement);
+    return $result;
   }
 }
 
@@ -90,8 +109,10 @@ class ParsedParams {
         public $ac_seq;
         public $ev_seq;
         public $loc_seq;
-        public $no_doppelgangers;
+        public $allow_doppelgangers;
         public $respect_death;
+        public $rating;
+        public $rating_hr;
 }
 /*
  *Classes for the main story components: Person, Location, Action, Event (& their consequences)
@@ -140,10 +161,73 @@ class ParsedParams {
                $this->emotional_state = $this->emotional_state + $emotional_state;
                $this->es_desc = $es_desc;
                /*Update the character arcs*/
-               $this->arc_es.=", ".$this->emotional_state;
+               $this->arc_es.=",".$this->emotional_state;
                $this->arc_desc.=",".$es_desc;
              }
   }
+
+/*
+ * The story class that holds all the data that is passed
+ * into the knowledge base.
+ *
+ */
+class Story {
+  public $story_id;
+  public $event_sequence;
+  public $location_sequence;
+  public $action_sequence;
+  public $rating;
+  public $respect_death;
+  public $allow_doppelgangers;
+  public $character_motive;
+  public $invert_cm;
+  public $markov_event;
+  public $markov_location;
+  public $markov_action;
+  public $n_gram_size;
+
+
+  /*
+   * @param an action ID to add to the action sequence
+   */
+  public function updateActionSeq($action_id){
+    $this->action_sequence.=",".$action_id;
+  }
+
+  /*
+   * @param an event ID to add to the event sequence
+   */
+  public function updateEventSeq($event_id){
+    $this->event_sequence.=",".$event_id;
+  }
+
+  /*
+   * @param a location ID to add to the location sequence
+   */
+  public function updateLocationSeq($location_id){
+    $this->location_sequence.=",".$location_id;
+  }
+
+  /*
+   * Insert the story to the evaluated_story table
+   * Return true if succesful else return the error
+   */
+  public function saveStory(){
+    global $saveStoryInsert;
+
+    $saveStory = $saveStoryInsert."('".trim($this->event_sequence, ',')."','".trim($this->location_sequence, ',')."','"
+    .trim($this->action_sequence, ',')."','".$this->rating."',".$this->respect_death.",".$this->allow_doppelgangers.");";
+
+    $result = executeInsert($saveStory);
+
+    if($result == true){
+      return true;
+    }
+    else {
+      return result;
+    }
+  }
+}
 
 class Location {
         public $id;
@@ -168,6 +252,7 @@ class Action {
       public $tone;
       public $consequence;
       public $conBrief;
+      public $con_desc;
       public $c1_es;
       public $c2_es;
       public $c1_es_desc;
@@ -175,7 +260,7 @@ class Action {
       public $is_dead;
 
       //constructor
-      public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief, $c1_es, $c2_es, $c1_es_desc, $c2_es_desc, $is_dead){
+      public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief,$con_desc, $c1_es, $c2_es, $c1_es_desc, $c2_es_desc, $is_dead){
         $this->id = $id;
         //$this->name = $name;
         $this->brief = $brief;
@@ -183,6 +268,7 @@ class Action {
         $this->tone = $tone;
         $this->consequence = $consequence;
         $this->conBrief = $conBrief;
+        $this->con_desc = $con_desc;
         $this->c1_es = $c1_es;
         $this->c2_es = $c2_es;
         $this->c1_es_desc = $c1_es_desc;
@@ -216,15 +302,17 @@ class Event {
       public $tone;
       public $consequence;
       public $conBrief;
+      public $con_desc;
 
       //constructor
-      public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief){
+      public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief, $con_desc){
         $this->id = $id;
         $this->brief = $brief;
         $this->longDesc = $longDesc;
         $this->tone = $tone;
         $this->consequence = $consequence;
         $this->conBrief = $conBrief;
+        $this->con_desc = $con_desc;
       }
  }
 
@@ -506,7 +594,7 @@ class StoryMaker {
     if($sizeA != 0){
       foreach ($resultA as $rowA) {
         //Create an action object for each selected action
-        return new Action($rowA['ac_id'], $rowA['brief'], $rowA['long_desc'], $rowA['tone'], $rowA['consequence'], $rowA['con_brief'], $rowA['c1_es'], $rowA['c2_es'], $rowA['c1_es_desc'], $rowA['c2_es_desc'], $rowA['is_dead']);
+        return new Action($rowA['ac_id'], $rowA['brief'], $rowA['long_desc'], $rowA['tone'], $rowA['consequence'], $rowA['con_brief'], $rowA['con_long'], $rowA['c1_es'], $rowA['c2_es'], $rowA['c1_es_desc'], $rowA['c2_es_desc'], $rowA['is_dead']);
       }
     }
     if($sizeA == 0){
@@ -523,7 +611,7 @@ class StoryMaker {
     if($sizeE != 0){
       foreach ($resultE as $rowE) {
         //Create an event object for each selected event
-        return new Event($rowE['event_id'], $rowE['brief'], $rowE['long_desc'], $rowE['tone'], $rowE['consequence'], $rowE['con_brief']);
+        return new Event($rowE['event_id'], $rowE['brief'], $rowE['long_desc'], $rowE['tone'], $rowE['consequence'], $rowE['con_brief'], $rowE['con_long']);
       }
     }
     if($sizeE == 0){

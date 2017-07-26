@@ -26,6 +26,10 @@ if (!$conn){
  /*parse params and get function required - Loop over params and assign them to variables. Return the function to call.*/
 $main = new Main();
 $params = $main->parseParams($_GET);
+//make a StoryMaker object
+$sm = new StoryMaker();
+//make a new ReflectionCycle
+$rc = new ReflectionCycle($sm);
 
 /*
  * Call the setup function of Main to get a KB_Data object
@@ -33,6 +37,13 @@ $params = $main->parseParams($_GET);
  */
 if($params->func == 'setup'){
   $kbData = $main->setup();
+
+  //Random event seed:
+  $randomEvent = $rc->pickRandomEvent();
+  $randomEventSeed = $randomEvent->id.",";
+  //Random location seed:
+  $randomLocation = $rc->pickRandomLocation();
+  $randomLocationSeed = $randomLocation->id.",";
   // echo "Params->func: ".$params->func."<br>";
 
   //Echo the data from the knowledge base that the n-gram and markov functions need
@@ -47,7 +58,8 @@ if($params->func == 'setup'){
 
   echo "<label>Action Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ac_cycle_count\"></input><br>";
   if($eventCount != 0){
-    echo "<label>Event Seed: </label><select id='ev_seed'>";
+    echo "<label>Event Seed: </label><select id='ev_seed'>
+          <option value='".$randomEventSeed."' selected>Random</option>";
     foreach ($kbData->event_seeds as $row) {
       echo "<option value='".$row['event_id'].",'>".$row['brief']."</option>";
     }
@@ -55,7 +67,8 @@ if($params->func == 'setup'){
   }
   echo "<label>Event Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ev_cycle_count\"></input><br>";
   if($locationCount != 0){
-    echo "<label>Location Seed: </label><select id='loc_seed'>";
+    echo "<label>Location Seed: </label><select id='loc_seed'>
+          <option value='".$randomLocationSeed."' selected>Random</option>";
     foreach ($kbData->location_seeds as $row) {
       echo "<option value='".$row['loc_id'].",'>".$row['name']."</option>";
     }
@@ -82,10 +95,6 @@ if($params->func == 'setup'){
   eg. event0, event1 .. eventX
 -------------------------------------*/
 elseif ($params->func == 'getStory') {
-  //make a StoryMaker object
-  $sm = new StoryMaker();
-  //make a new ReflectionCycle
-  $rc = new ReflectionCycle($sm);
   //Initialise some javascript arrays for storing the stor details as they occur
   echo "<script>
           var locArray = [];
@@ -93,13 +102,20 @@ elseif ($params->func == 'getStory') {
           var actionArray = [];
         </script>";
 
+  //Set some useful variables and create a Story
+  $early_break = 0; //Used for breaking from the event/location cycles if a character has died and respect_death is on
+  $story = new Story();
+  //Set the known story variables and a temporary rating
+  $story->rating = 'x'; //currently unrated
+  $story->respect_death = $params->respect_death;
+  $story->allow_doppelgangers = $params->allow_doppelgangers;
   /*-------------------
     Generate Characters
   --------------------*/
   //first character at random
   $char1 = $sm->makeCharacter();
   //check if allow doppelgangers is set
-  if($params->no_doppelgangers == 1){
+  if($params->allow_doppelgangers == 1){
     $char2 = $sm->getCharacterWhoIsnt($char1->id);
   }
   else{
@@ -116,6 +132,8 @@ elseif ($params->func == 'getStory') {
     //Create a new action
     $currentAction = $rc->actionCycleCM($char1, $char2);
     $passableAction = json_encode($currentAction);
+    //Update the action_sequence
+    $story->updateActionSeq($currentAction->id);
     echo "<script>
             var action".$i." = ".$passableAction.";
             actionArray.push(".$passableAction.");
@@ -127,19 +145,20 @@ elseif ($params->func == 'getStory') {
     echo $char2->firstname." emotional state: ".$char2->es_desc."(".$char2->emotional_state.")<br>";
 
 
-    //If resepect_death is set - check if anyone has died
-    if($params->respect_death == '1'){
-      //Check if anyone's dead
-      if ($currentAction->is_dead !== 'x') {
+    //Check if anyone's dead
+    if ($currentAction->is_dead !== 'x') {
         if($currentAction->is_dead == 'c1'){
           $char1->kill();
         }
-        else {
+        if($currentAction->is_dead == 'c2') {
           $char2->kill();
         }
-        echo "A character (".$currentAction->is_dead.") is Dead! Cycle stopped.";
-        break;
-      }
+        //If resepect_death is set - check if anyone has died
+        if($params->respect_death == '1'){
+            echo "A character (".$currentAction->is_dead.") is Dead! Cycle stopped.";
+            $early_break = $i+1; //set +1 as the other loops subtract 1 from limit
+            break;
+        }
     }
   }
   /*-----------------------------------
@@ -160,15 +179,21 @@ elseif ($params->func == 'getStory') {
   -----------------*/
   //Turn the markov chain into an array
   $eventArray = explode(",", $params->ev_seq);
-  //Quick check to see if the Markov chain is shorter then the requested number of events
-  $len = count($eventArray);//Remove the last empty element after the comma
-  if($len < $params->ev_cycle_count){
-    echo "Short Markov chain generated!<br>";
-    $limit = $len;
+  //Quick check to see if the Markov chain is shorter then the requested number of events OR the action cycle ended early because of respect_death
+  if($early_break != 0){
+    $limit = $early_break;
   }
-  else{
-    $limit = $params->ev_cycle_count;
+  else {
+    $len = count($eventArray);//Remove the last empty element after the comma
+    if($len < $params->ev_cycle_count){
+      echo "Short Markov chain generated!<br>";
+      $limit = $len;
+    }
+    else{
+      $limit = $params->ev_cycle_count;
+    }
   }
+
 
   //Create the required number of events echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
@@ -191,6 +216,8 @@ elseif ($params->func == 'getStory') {
     echo "Event Consequence: ".$currentEvent->conBrief."<br>";
     //return a JSON object for the browser
     $passableEvent = json_encode($currentEvent);
+    //Update the event_sequence
+    $story->updateEventSeq($currentEvent->id);
     echo "<script>
             var event".$i." = ".$passableEvent.";
             eventArray.push(".$passableEvent.");
@@ -202,19 +229,26 @@ elseif ($params->func == 'getStory') {
   -------------------*/
   //Turn the markov chain into an array
   $locationArray = explode(",", $params->loc_seq);
-  //Quick check to see if the Markov chain is shorter then the requested number of events
-  $len = count($locationArray);
-  if($len < $params->loc_cycle_count){
-    echo "Short Markov chain generated!<br>";
-    $limit = $len;
+
+  //Quick check to see if the Markov chain is shorter then the requested number of locations OR the action cycle ended early because of respect_death
+  if($early_break != 0){
+    $limit = $early_break;
   }
   else{
-    $limit = $params->loc_cycle_count;
+    $len = count($locationArray);
+    if($len < $params->loc_cycle_count){
+      echo "Short Markov chain generated!<br>";
+      $limit = $len;
+    }
+    else{
+      $limit = $params->loc_cycle_count;
+    }
   }
-  //Create the required number of events echo them and return them as JSON objects
+
+  //Create the required number of locations echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
     $location_id = $locationArray[$i];
-    //Error handling if there's a missing element/event is null/etc
+    //Error handling if there's a missing element/location is null/etc
     $exists = $sm->checkExists('location', $location_id);
     //Create a new event
     if($exists == true){
@@ -232,12 +266,23 @@ elseif ($params->func == 'getStory') {
     echo "Description: ".$currentLocation->brief."<br>";
     //return a JSON object for the browser
     $passableLocation = json_encode($currentLocation);
+    //Update the location_sequence
+    $story->updateLocationSeq($currentLocation->id);
     echo "<script>
             var loc".$i." = ".$passableLocation.";
             locArray.push(".$passableLocation.");
           </script>";
   }
 
+  /*------------------------
+    Complete and echo Story
+   -----------------------*/
+   //Save the story to the KB
+   $result = $story->saveStory();
+   $passableStory = json_encode($story);
+   echo "<script>
+          var story = ".$passableStory.";
+         </script>";
   /*-------------
     Echo Params
    -------------*/
@@ -247,6 +292,25 @@ elseif ($params->func == 'getStory') {
   }
 }
 
+/*---------------------------
+  Save the story to the KB
+ ---------------------------*/
+elseif ($params->func == 'evaluateStory') {
+  //Update the story's rating
+  $result = $main->rateLatestStory($params->rating);
+
+  //Check the result and return it with user facing feedback.
+  if($result == true){
+    echo "<script>
+            $('#evaluateBox').html('Story evaluated as ".$params->rating_hr.".');
+          </script>".$result;
+  }
+  else{
+    echo "<script>
+            $('#evaluateBox').html('Something went wrong. Check Params?');
+          </script>".$result;
+  }
+}
 else{
   //echo $params->func;
   var_dump($params);

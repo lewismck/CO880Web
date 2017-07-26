@@ -27,13 +27,17 @@
 		<div id="storyParams" class="form-group">
 			<!--  Params returned here by mainSetup() -->
 		</div>
-	 	<br>
+		</br>
 		<div>
-			<a class='btn btn-default' onclick="getStory();">Test!</a><br><br>
-			<!-- View the passed parameters and returned data  -->
-			<button type="button" class="btn btn-info" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
+			<a class='btn btn-primary' onclick="getStory();">Generate</a></br></br>
 		</div>
 		<div id="outlineBox" class=".col-md-8 .col-md-offset-4"></div></br>
+		<div id="evaluateBox" class=".col-md-8 .col-md-offset-4"></div></br>
+		<div id="footerBox">
+			</br>
+			<!-- View the passed parameters and returned data  -->
+			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
+		</div>
 	</div>
 
 
