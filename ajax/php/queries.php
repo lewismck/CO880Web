@@ -27,6 +27,8 @@
 
   $updateStoryRating = "UPDATE evaluated_story es SET es.rating = ";
 
+  $saveCharacterInsert = "INSERT INTO evaluated_characters (character_obj, story_id) VALUES(";
+
   /*
   * ReflectionCycle queries
   *
@@ -40,6 +42,8 @@
                         , ac.c1_es_desc
                         , ac.c2_es_desc
                         , ac.is_dead
+                        , ac.invert_c1_c2
+                        , ac.solo_action
                         FROM action
                         JOIN action_consequence ac ON action.consequence=ac.con_id ";
 

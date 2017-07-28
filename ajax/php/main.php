@@ -2,9 +2,9 @@
 /*------------------------------------
   Main server side business logic kept
   here.
-  Execute server side code and echo
+  Execute server side code and echoes
   the results as JSON objects for the
-  browser to manipulate and display
+  browser to manipulate and display.
   Functions:
     setup
     getStory
@@ -31,20 +31,20 @@ $sm = new StoryMaker();
 //make a new ReflectionCycle
 $rc = new ReflectionCycle($sm);
 
-/*
+/*-----------------------------------------------------------
  * Call the setup function of Main to get a KB_Data object
- * echo the data as javascript variables to use later in markovIt and makeNgrams
- */
+ * echo the data as javascript variables to use
+ * later in markovIt and makeNgrams
+ ----------------------------------------------------------*/
 if($params->func == 'setup'){
   $kbData = $main->setup();
-
+  //TODO split the storyParams setup and the setup setup into 2 functions
   //Random event seed:
   $randomEvent = $rc->pickRandomEvent();
-  $randomEventSeed = $randomEvent->id.",";
+  $randomEventSeed = $randomEvent->id.","; //echo as JS variable so it can be updated each time a story is generated?
   //Random location seed:
   $randomLocation = $rc->pickRandomLocation();
   $randomLocationSeed = $randomLocation->id.",";
-  // echo "Params->func: ".$params->func."<br>";
 
   //Echo the data from the knowledge base that the n-gram and markov functions need
   echo "<script>
@@ -61,7 +61,13 @@ if($params->func == 'setup'){
     echo "<label>Event Seed: </label><select id='ev_seed'>
           <option value='".$randomEventSeed."' selected>Random</option>";
     foreach ($kbData->event_seeds as $row) {
-      echo "<option value='".$row['event_id'].",'>".$row['brief']."</option>";
+      if(strlen($row['event_id']) >= 2){
+        $currentEventSeed = $row['event_id'];
+      }
+      else{
+        $currentEventSeed = $row['event_id'].",";
+      }
+      echo "<option value='".$currentEventSeed."'>".$row['brief']."</option>";
     }
     echo "</select><br>";
   }
@@ -70,6 +76,12 @@ if($params->func == 'setup'){
     echo "<label>Location Seed: </label><select id='loc_seed'>
           <option value='".$randomLocationSeed."' selected>Random</option>";
     foreach ($kbData->location_seeds as $row) {
+      if(strlen($row['loc_id']) >= 2){
+        $currentLocSeed = $row['loc_id'];
+      }
+      else{
+        $currentLocSeed = $row['loc_id'].",";
+      }
       echo "<option value='".$row['loc_id'].",'>".$row['name']."</option>";
     }
     echo "</select><br>";
@@ -96,6 +108,7 @@ if($params->func == 'setup'){
 -------------------------------------*/
 elseif ($params->func == 'getStory') {
   //Initialise some javascript arrays for storing the stor details as they occur
+  //all output is placed in a #storyBox div when returned to the browser (viewable in a modal popup)
   echo "<script>
           var locArray = [];
           var eventArray = [];
@@ -109,6 +122,7 @@ elseif ($params->func == 'getStory') {
   $story->rating = 'x'; //currently unrated
   $story->respect_death = $params->respect_death;
   $story->allow_doppelgangers = $params->allow_doppelgangers;
+
   /*-------------------
     Generate Characters
   --------------------*/
@@ -123,6 +137,7 @@ elseif ($params->func == 'getStory') {
   }
   //Display some Character Details
   echo "<h3>Characters</h3>".$char1->describe()."<br>".$char2->describe()."<br>";
+
   //TODO rewrite for loops (esp for location and event as a function in main/sm?)
   /*-----------------
     Generate Actions
@@ -193,7 +208,6 @@ elseif ($params->func == 'getStory') {
       $limit = $params->ev_cycle_count;
     }
   }
-
 
   //Create the required number of events echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
@@ -275,21 +289,19 @@ elseif ($params->func == 'getStory') {
   }
 
   /*------------------------
-    Complete and echo Story
+    Save and echo Story
    -----------------------*/
    //Save the story to the KB
    $result = $story->saveStory();
+   //Save the characters
+   $story->saveCharacter($char1);
+   $story->saveCharacter($char2);
    $passableStory = json_encode($story);
    echo "<script>
           var story = ".$passableStory.";
          </script>";
-  /*-------------
-    Echo Params
-   -------------*/
-  echo "<h3>Params:</h3>";
-  foreach ($params as $key => $value) {
-    echo "Key: $key Value: $value <br>";
-  }
+    //Return the parsed params to the DOM
+    $main->echoParams($params);
 }
 
 /*---------------------------
@@ -303,12 +315,14 @@ elseif ($params->func == 'evaluateStory') {
   if($result == true){
     echo "<script>
             $('#evaluateBox').html('Story evaluated as ".$params->rating_hr.".');
-          </script>".$result;
+          </script><br>Result: ".$result;
+    $main->echoParams($params); //Return the parsed params to the browser DOM
   }
   else{
     echo "<script>
             $('#evaluateBox').html('Something went wrong. Check Params?');
-          </script>".$result;
+          </script><br>Result: ".$result;
+    $main->echoParams($params); //Return the parsed params to the browser DOM
   }
 }
 else{
@@ -317,5 +331,4 @@ else{
   echo "url func: ".$_GET['func']."<br>";
   echo "Params->func: ".$params->func."<br>";
 }
-
  ?>

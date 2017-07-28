@@ -24,13 +24,18 @@
 <body onload="mainSetup();">
 	<div id="mainBody" class="col-md-12 text-center">
 		<h1>CO880 Main Test</h1>
-		<div id="storyParams" class="form-group">
-			<!--  Params returned here by mainSetup() -->
-		</div>
-		</br>
-		<div>
-			<a class='btn btn-primary' onclick="getStory();">Generate</a></br></br>
-		</div>
+		<form action="javascript:getStory();">
+			<fieldset>
+				<div id="storyParams" class="form-group">
+					<!--  Params returned here by mainSetup() -->
+				</div>
+				</br>
+				<div>
+					<input type="submit" value="Generate" class="btn btn-primary"></br></br>
+					<!-- <a class='btn btn-primary' onclick="getStory();">Generate</a></br></br> -->
+				</div>
+			</fieldset>
+		</form>
 		<div id="outlineBox" class=".col-md-8 .col-md-offset-4"></div></br>
 		<div id="evaluateBox" class=".col-md-8 .col-md-offset-4"></div></br>
 		<div id="footerBox">

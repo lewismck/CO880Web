@@ -117,11 +117,36 @@ function printOutline2(){
     //Locations
     locationInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+locArray[i].brief+"'>"+locArray[i].name+"</a>";
 
+    //Outline solo action
+    if(actionArray[i].solo_action == 1){
+      if(actionArray[i].protagonist == 'c1'){
+        protagonist = char1Info;
+      }
+      else{
+        protagonist = char2Info;
+      }
+      outline = eventInfo +" at " + locationInfo
+      + " Meanwhile " + protagonist+ " "+actionInfo
+      + ".<br>"+protagonist+" "+acConseqenceInfo
+      + ". As " + evConseqenceInfo + ".<br><br>";
+    }
+    //Outline invert_c1_c2 flag (for consequence)
+    else if(actionArray[i].invert_c1_c2 == 1){
+      outline = eventInfo +" at " + locationInfo
+      + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
+      +".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info
+      + ". As " + evConseqenceInfo + ".<br><br>";
+    }
+    //Outline normal
+    else{
+      outline = eventInfo +" at " + locationInfo
+      + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
+      +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
+      + ". As " + evConseqenceInfo + ".<br><br>";
+    }
+
     //Print the data linked together in order
-    $("#outlineBox").append(eventInfo +" at " + locationInfo
-    + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
-    +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
-    + ". As " + evConseqenceInfo + ".<br><br>");
+    $("#outlineBox").append(outline);
 
     //If a character has died and respect death is on stop
     if((actionArray[i].is_dead != 'x') && rd == '1'){
@@ -213,6 +238,22 @@ function printLocations(n){
        ngrams[gram] = [];
      }
      ngrams[gram].push(src.charAt(i+n));
+   }
+   console.log(ngrams);
+   return ngrams;
+ }
+
+ function makeNgrams2(src, n){
+   var ngrams = {};
+
+   for (var i = 0; i <= src.length-n; i++){
+     var gramWithComma = src.substring(i, i+n);
+     var gram = gramWithComma.replace(/,/g, ' ');
+
+     if(!ngrams[gram]){
+       ngrams[gram] = [];
+     }
+     ngrams[gram].push(src.charAt(i+n).replace(/,/g, ' '));
    }
    console.log(ngrams);
    return ngrams;

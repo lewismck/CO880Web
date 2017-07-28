@@ -1,11 +1,11 @@
 <?php
-require_once('queries.php');
+require_once('queries.php'); //Require the queries.php file - contains all the SQL code used
+
 class Main {
 
   /*
+   * @return a KB_Data object with it's attributes completed
    * Query all the story data from the KB and set it as javascript variables
-   *
-   *
    */
   public function setup(){
 
@@ -27,6 +27,8 @@ class Main {
 
   /*
    * @param array (_GET/_POST) containing parameters to be parsed.
+   * @return a parseParams object with the fields in $params filled
+   * in
    * TODO sanitise inputs
    */
   public function parseParams($params){
@@ -66,13 +68,26 @@ class Main {
       elseif($key == 'rating_hr'){
         $parsedParams->rating_hr = $value;
       }
-      // elseif ($key == 'story') {
-      //   $parsedParams->story = serialize($value);
-      // }
     }
     return $parsedParams;
   }
 
+  /*
+   * @param the params object (or any key value array really)
+   * @return echoes the key value pairs of $params
+   */
+  function echoParams($params){
+    echo "<h3>Params:</h3>";
+    foreach ($params as $key => $value) {
+      echo "Key: $key Value: $value <br>";
+    }
+  }
+
+  /*
+   * @param the rating 'g'/'b' of the story
+   * @return true if the evaluated_story row was updated succesfully
+   * else false
+   */
   public function rateLatestStory($rating){
     global $getLatestStoryIDQuery, $updateStoryRating;
     $latest_id_request = executeQuery($getLatestStoryIDQuery);
@@ -112,12 +127,11 @@ class ParsedParams {
         public $allow_doppelgangers;
         public $respect_death;
         public $rating;
-        public $rating_hr;
+        public $rating_hr; //Human readable rating
 }
 /*
  *Classes for the main story components: Person, Location, Action, Event (& their consequences)
- *Also contains a StoryMaker class with functions for creating and returning the story components-
- *-and a function for evaluating stories
+ *Also contains a StoryMaker class with functions for creating and returning the story components and a ReflectionCycle class for generating actions/events/locations in loops
  *Allows for object creation and re-use. Objects are be passed to js as JSON objects.
  */
  class Person {
@@ -130,9 +144,9 @@ class ParsedParams {
              public $age;
              public $temperment;
              public $emotional_state = 0;
-             public $es_desc = 'x';
+             public $es_desc = 'neutral';
              public $arc_es = '0';
-             public $arc_desc = '';
+             public $arc_desc = 'neutral';
 
              // Assigning the values
              public function __construct($id, $firstname, $lastname, $gender, $descID, $age, $temperment) {
@@ -209,8 +223,10 @@ class Story {
   }
 
   /*
-   * Insert the story to the evaluated_story table
-   * Return true if succesful else return the error
+   * Insert the story to the evaluated_story table and the characters into the character_obj table
+   * @Param the first character
+   * @Param the second character
+   * @Return true if succesful else return the error
    */
   public function saveStory(){
     global $saveStoryInsert;
@@ -224,7 +240,31 @@ class Story {
       return true;
     }
     else {
-      return result;
+      return "Story Insert: ".$result;
+    }
+  }
+/*
+ * Insert the characters into the character_obj table
+ * @Param the character to insert
+ * @Return true if succesful else return the error
+ */
+  public function saveCharacter($char1){
+    global $saveCharacterInsert;
+    //Serialize the character
+    $serializedChar = Serialize($char1);
+    //Save the serialized characters
+    $saveChar = $saveCharacterInsert."'".$serializedChar."',(SELECT MAX(story_id) FROM evaluated_story));";
+
+
+    //echo $saveChar;
+    $resultChar = executeInsert($saveChar);
+    //$resultChar = true;
+
+    if($resultChar == true){
+      return true;
+    }
+    else {
+      return "<br>Character Insert: ".$resultChar;
     }
   }
 }
@@ -246,7 +286,6 @@ class Location {
 
 class Action {
       public $id;
-      //public $name;
       public $brief;
       public $longDesc;
       public $tone;
@@ -258,11 +297,13 @@ class Action {
       public $c1_es_desc;
       public $c2_es_desc;
       public $is_dead;
+      public $invert_c1_c2;//may have to have 2 for action and consequence
+      public $solo_action;
+      public $protagonist;
 
       //constructor
-      public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief,$con_desc, $c1_es, $c2_es, $c1_es_desc, $c2_es_desc, $is_dead){
+      public function __construct($id, $brief, $longDesc, $tone, $consequence, $conBrief,$con_desc, $c1_es, $c2_es, $c1_es_desc, $c2_es_desc, $is_dead, $invert_c1_c2, $solo_action){
         $this->id = $id;
-        //$this->name = $name;
         $this->brief = $brief;
         $this->longDesc = $longDesc;
         $this->tone = $tone;
@@ -274,16 +315,17 @@ class Action {
         $this->c1_es_desc = $c1_es_desc;
         $this->c2_es_desc = $c2_es_desc;
         $this->is_dead = $is_dead;
+        $this->invert_c1_c2 = $invert_c1_c2;
+        $this->solo_action = $solo_action;
       }
  }
 
+/*!!Depercated!!*/
 class ActionCon {
   public $id;
-  //public $name;
   public $brief;
   public $longDesc;
   public $tone;
-  //public $ac_id;
 
   //constructor
   public function __construct($id, $brief, $longDesc, $tone){
@@ -316,9 +358,9 @@ class Event {
       }
  }
 
+/*!!Depercated!!*/
 class EventCon {
   public $id;
-  //public $name;
   public $brief;
   public $longDesc;
   public $tone;
@@ -331,13 +373,12 @@ class EventCon {
     $this->longDesc = $longDesc;
     $this->tone = $tone;
    }
-
  }
 
 /*
  * Run cycles of actions or events with different parameters
  * for the rulesets involved
- * TODO refactor to extend StoryMaker - Change creation statements
+ * TODO refactor to extend StoryMaker - Change creation statements?
  * TODO when refactored move getXbyID functions to StoryMaker
  */
  class ReflectionCycle{
@@ -370,24 +411,47 @@ class EventCon {
       if($char1->emotional_state == $char2->emotional_state){
         $currentAction = $this->pickRandomAction();
         //Update the character states
-        $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
-        $char2->updateES($currentAction->c2_es, $currentAction->c2_es_desc);
+        if($currentAction->solo_action == 1){//If it's a random solo action it happens to the protagonist (c1)
+            $char2->updateES(0, $char2->es_desc); //just keep character 2's arc the same
+            $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
+            $currentAction->protagonist = 'c1';
+        }
+        else {
+          $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
+          $char2->updateES($currentAction->c2_es, $currentAction->c2_es_desc);
+        }
         return $currentAction;
       }
       //Check to see which character is least happy
       //Pick an action that will improve their mood
       elseif ($char1->emotional_state < $char2->emotional_state) {
         $whereCondition = "WHERE ac.c1_es > 0";
+        $charToUpdate = 'c1';
       }
       //Char2 must be less happy so choose an action that will improve their mood
       else {
         $whereCondition = "WHERE ac.c2_es > 0"; //could be >= ??
+        $charToUpdate = 'c2';
       }
       $actionStatement = $actionStatementGet.$whereCondition." ORDER BY RAND() LIMIT 1;";
       $currentAction = $this->reflectSM->getAction($actionStatement);
       //update character states
-      $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
-      $char2->updateES($currentAction->c2_es, $currentAction->c2_es_desc);
+      if($currentAction->solo_action == 1){ //if it's a solo action update the right character
+        if($charToUpdate == 'c1'){
+          $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
+          $char2->updateES(0, $char2->es_desc); //just keep character 2's arc the same
+          $currentAction->protagonist = $charToUpdate;
+        }
+        else {
+          $char2->updateES($currentAction->c2_es, $currentAction->c2_es_desc);
+          $char1->updateES(0, $char1->es_desc); //just keep character 1's arc the same
+          $currentAction->protagonist = $charToUpdate;
+        }
+      }
+      else{ //if it's not a solo action update both
+        $char1->updateES($currentAction->c1_es, $currentAction->c1_es_desc);
+        $char2->updateES($currentAction->c2_es, $currentAction->c2_es_desc);
+      }
       return $currentAction;
     }
 
@@ -424,7 +488,6 @@ class EventCon {
 
     /*
      * Pick a new event at random and return it
-     * eventCycle should get
      */
     public function pickRandomEvent(){
       global $eventStatementGet;
@@ -461,7 +524,7 @@ class EventCon {
 
 
 /*
- * Currently deprecated...JS implementation used instead in AJAX call
+ * Currently !!Deprecated!! ...JS implementation used instead in AJAX call
  *
  */
  class Markov {
@@ -562,8 +625,9 @@ class StoryMaker {
 
   /*
    * execute LOCATION statements
-   * Parameter is a sql query returning one row from
+   * @Param a sql query returning one row from
    * the location table
+   * @Return a location object else false
    */
   public function getLocation($query){
     $resultL = executeQuery($query);
@@ -582,10 +646,10 @@ class StoryMaker {
   }
 
   /*
-   *execute ACTION statements
-   *@param a sql query returning a row from action and
-   *the consequence from action_consequence as con_brief
-   *query: action.*, action_consequence.brief AS con_brief
+   * Execute ACTION statements
+   * @param a sql query returning a row from action and
+   * the consequence from action_consequence as con_brief
+   * @Return an action object else false
    */
   public function getAction($query){
     $resultA = executeQuery($query);
@@ -594,7 +658,7 @@ class StoryMaker {
     if($sizeA != 0){
       foreach ($resultA as $rowA) {
         //Create an action object for each selected action
-        return new Action($rowA['ac_id'], $rowA['brief'], $rowA['long_desc'], $rowA['tone'], $rowA['consequence'], $rowA['con_brief'], $rowA['con_long'], $rowA['c1_es'], $rowA['c2_es'], $rowA['c1_es_desc'], $rowA['c2_es_desc'], $rowA['is_dead']);
+        return new Action($rowA['ac_id'], $rowA['brief'], $rowA['long_desc'], $rowA['tone'], $rowA['consequence'], $rowA['con_brief'], $rowA['con_long'], $rowA['c1_es'], $rowA['c2_es'], $rowA['c1_es_desc'], $rowA['c2_es_desc'], $rowA['is_dead'], $rowA['invert_c1_c2'], $rowA['solo_action']);
       }
     }
     if($sizeA == 0){
@@ -602,7 +666,11 @@ class StoryMaker {
     }
   }
 
-  /*execute EVENT statements*/
+  /*
+   * Execute EVENT statements
+   * @Param a query returning event class constructor params
+   * @Return an event else false
+   */
   public function getEvent($query){
     $resultE = executeQuery($query);
     $sizeE = count($resultE);
@@ -654,6 +722,7 @@ class StoryMaker {
    }
 
    /*
+    * !!Deprecated!!
     *Return the frequency of the event, location and action occurences in the knowledge base
     *!!DEPENDENCY: Uses connect.php's connect function
     *TODO: reformat to accept one event type and a flag to indicate what type
