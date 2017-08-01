@@ -41,10 +41,29 @@ if($params->func == 'setup'){
   //TODO split the storyParams setup and the setup setup into 2 functions
   //Random event seed:
   $randomEvent = $rc->pickRandomEvent();
-  $randomEventSeed = $randomEvent->id.","; //echo as JS variable so it can be updated each time a story is generated?
+  if(strlen($randomEvent->id) >= 2){
+    $randomEventSeed = $randomEvent->id;
+  }
+  else{
+    $randomEventSeed = $randomEvent->id.","; //echo as JS variable so it can be updated each time a story is generated?
+  }
   //Random location seed:
   $randomLocation = $rc->pickRandomLocation();
-  $randomLocationSeed = $randomLocation->id.",";
+  if(strlen($randomLocation->id) >= 2){
+    $randomLocationSeed = $randomLocation->id;
+  }
+  else{
+    $randomLocationSeed = $randomLocation->id.",";
+  }
+  //Random action seed:
+  $randomAction = $rc->pickRandomAction();
+  if(strlen($randomAction->id) >= 2){
+    $randomActionSeed = $randomAction->id;
+  }
+  else{
+    $randomActionSeed = $randomAction->id.",";
+  }
+
 
   //Echo the data from the knowledge base that the n-gram and markov functions need
   echo "<script>
@@ -55,8 +74,31 @@ if($params->func == 'setup'){
 
   $eventCount = count($kbData->event_seeds);
   $locationCount = count($kbData->location_seeds);
+  $actionCount = count($kbData->action_seeds);
 
-  echo "<label>Action Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ac_cycle_count\"></input><br>";
+  //Option for cycle count
+  echo "<label>Cycle Count: </label><select id=\"cycle_count\">
+          <option value=\"1\" selected>1</option>";
+  for ($i = 2; $i <= 10; $i++) {
+    echo "<option value='".$i."'>".$i."</option>";
+  }
+  echo "</select><br>";
+  //Option for action seed
+  if($actionCount != 0){
+    echo "<label>Action Seed: </label><select id='ac_seed' disabled=\"true\">
+          <option value='".$randomActionSeed."' selected>Random</option>";
+    foreach ($kbData->action_seeds as $row) {
+      if(strlen($row['ac_id']) >= 2){
+        $currentActionSeed = $row['ac_id'];
+      }
+      else{
+        $currentActionSeed = $row['ac_id'].",";
+      }
+      echo "<option value='".$currentActionSeed."'>".$row['brief']."</option>";
+    }
+    echo "</select><br>";
+  }
+  //Option for event seed
   if($eventCount != 0){
     echo "<label>Event Seed: </label><select id='ev_seed'>
           <option value='".$randomEventSeed."' selected>Random</option>";
@@ -71,7 +113,8 @@ if($params->func == 'setup'){
     }
     echo "</select><br>";
   }
-  echo "<label>Event Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ev_cycle_count\"></input><br>";
+  // echo "<label>Event Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ev_cycle_count\"></input><br>";
+  //Option for location Seed
   if($locationCount != 0){
     echo "<label>Location Seed: </label><select id='loc_seed'>
           <option value='".$randomLocationSeed."' selected>Random</option>";
@@ -86,17 +129,27 @@ if($params->func == 'setup'){
     }
     echo "</select><br>";
   }
-	echo "<label>Location Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"loc_cycle_count\"></input><br>
-    <label>Allow Doppelgangers: </label>
-  	<select name=\"no_dop\"  id=\"no_dop\">
-  		<option value=\"1\" selected>True</option>
-  		<option value=\"0\">False</option>
-  	</select><br>
-  	<label>Respect Death: </label>
-  	<select name=\"respect_death\"  id=\"rd\">
-  		<option value=\"1\" selected>True</option>
-  		<option value=\"0\">False</option>
-  	</select><br>";
+
+  echo "<label>Action Choice: </label><br>
+         <input type=\"radio\" name=\"action_choice\" value=\"cm\" onchange=\"disableSeed()\" checked> Character Motivation<br>
+         <input type=\"radio\" name=\"action_choice\" value=\"markov\" onchange=\"disableSeed()\" > Markov Chain<br>
+         <input type=\"radio\" name=\"action_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+          <label>Event Choice: </label><br>
+          <input type=\"radio\" name=\"event_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
+          <input type=\"radio\" name=\"event_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+        <label>Location Choice: </label><br>
+         <input type=\"radio\" name=\"location_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
+         <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+        <label>Allow Doppelgangers: </label>
+      	<select name=\"no_dop\"  id=\"no_dop\">
+      		<option value=\"1\" selected>True</option>
+      		<option value=\"0\">False</option>
+      	</select><br>
+      	<label>Respect Death: </label>
+      	<select name=\"respect_death\"  id=\"rd\">
+      		<option value=\"1\" selected>True</option>
+      		<option value=\"0\">False</option>
+      	</select><br>";
 
 }
 
@@ -122,6 +175,25 @@ elseif ($params->func == 'getStory') {
   $story->rating = 'x'; //currently unrated
   $story->respect_death = $params->respect_death;
   $story->allow_doppelgangers = $params->allow_doppelgangers;
+  //Set story metadata based on action choice
+  $story->action_choice = $params->action_choice;
+  $story->location_choice = $params->location_choice;
+  $story->event_choice = $params->event_choice;
+  // if($params->action_choice == 'cm'){
+  //   $story->character_motive = 1;
+  //   $story->markov_action = 0;
+  //   $story->random_action = 0;
+  // }
+  // if($params->action_choice == 'markov'){
+  //   $story->character_motive = 0;
+  //   $story->markov_action = 1;
+  //   $story->random_action = 0;
+  // }
+  // if($params->action_choice == 'random'){
+  //   $story->character_motive = 0;
+  //   $story->markov_action = 0;
+  //   $story->random_action = 1;
+  // }
 
   /*-------------------
     Generate Characters
@@ -142,10 +214,34 @@ elseif ($params->func == 'getStory') {
   /*-----------------
     Generate Actions
   ------------------*/
-  for ($i=0; $i < $params->ac_cycle_count; $i++) {
+  //Turn the markov chain into an array
+  if($params->action_choice == 'markov'){
+    $actionArray = explode(",", $params->ac_seq);
+  }
+  //Create the required number of actions
+  for ($i=0; $i < $params->cycle_count; $i++) {
     echo "<h2>Action ".$i.":</h2>";
     //Create a new action
-    $currentAction = $rc->actionCycleCM($char1, $char2);
+    if($params->action_choice == 'cm'){
+      $currentAction = $rc->actionCycleCM($char1, $char2);
+    }
+    elseif ($params->action_choice == 'markov') {
+      $action_id = $actionArray[$i];
+      //Error handling if there's a missing element/event is null/etc
+      $exists = $sm->checkExists('action', $action_id);
+      //Create a new event
+      if($exists == true){
+        $currentAction = $rc->getActionByID($action_id, $char1, $char2);
+      }
+      //Pick a random event if there is one missing from the Markov chain
+      elseif ($exists == false) {
+        $currentAction = $rc->actionCycleRandom($char1, $char2);
+      }
+    }
+    else { //action choice must be random
+      $currentAction = $rc->actionCycleRandom($char1, $char2);
+    }
+
     $passableAction = json_encode($currentAction);
     //Update the action_sequence
     $story->updateActionSeq($currentAction->id);
@@ -154,10 +250,10 @@ elseif ($params->func == 'getStory') {
             actionArray.push(".$passableAction.");
           </script>";
     //Print details
-    echo $char1->firstname." ".$currentAction->brief." ".$char2->firstname.".<br>";
-    echo "So ".$char1->firstname." ".$currentAction->conBrief." ".$char2->firstname.".<br>";
-    echo $char1->firstname." emotional state: ".$char1->es_desc." (".$char1->emotional_state.")<br>";
-    echo $char2->firstname." emotional state: ".$char2->es_desc."(".$char2->emotional_state.")<br>";
+    echo "ID: ".$currentAction->id."<br>Brief: ".$currentAction->brief.".<br>"
+    ."consequence Brief: ".$currentAction->conBrief.".<br>"
+    .$char1->firstname." emotional state: ".$char1->es_desc." (".$char1->emotional_state.")<br>"
+    .$char2->firstname." emotional state: ".$char2->es_desc."(".$char2->emotional_state.")<br>";
 
 
     //Check if anyone's dead
@@ -192,40 +288,45 @@ elseif ($params->func == 'getStory') {
   /*---------------
     Generate Events
   -----------------*/
-  //Turn the markov chain into an array
-  $eventArray = explode(",", $params->ev_seq);
-  //Quick check to see if the Markov chain is shorter then the requested number of events OR the action cycle ended early because of respect_death
-  if($early_break != 0){
-    $limit = $early_break;
-  }
-  else {
+  if($params->event_choice == 'markov'){
+    //Turn the markov chain into an array
+    $eventArray = explode(",", $params->ev_seq);
+    //Quick check to see if the Markov chain is shorter then the requested number of events OR the action cycle ended early because of respect_death
     $len = count($eventArray);//Remove the last empty element after the comma
-    if($len < $params->ev_cycle_count){
+    if($len < $params->cycle_count){
       echo "Short Markov chain generated!<br>";
       $limit = $len;
     }
-    else{
-      $limit = $params->ev_cycle_count;
-    }
+  }
+  if($early_break != 0){
+    $limit = $early_break;
+  }
+  else{
+    $limit = $params->cycle_count;
   }
 
   //Create the required number of events echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
-    $event_id = $eventArray[$i];
-    //Error handling if there's a missing element/event is null/etc
-    $exists = $sm->checkExists('event', $event_id);
-    //Create a new event
-    if($exists == true){
-      $currentEvent = $rc->getEventByID($event_id);
+    if($params->event_choice == 'markov'){
+      $event_id = $eventArray[$i];
+      //Error handling if there's a missing element/event is null/etc
+      $exists = $sm->checkExists('event', $event_id);
+      //Create a new event
+      if($exists == true){
+        $currentEvent = $rc->getEventByID($event_id);
+      }
+      //Pick a random event if there is one missing from the Markov chain
+      if ($exists == false) {
+        $currentEvent = $rc->pickRandomEvent();
+      }
     }
-    //Pick a random event if there is one missing from the Markov chain
-    elseif ($exists == false) {
+    else{ //choice must be random
       $currentEvent = $rc->pickRandomEvent();
     }
 
     //echo details
     echo "<h3>Event ".$i.":</h3>";
-    echo "Event ID: ".$event_id."<br>";
+    echo "Event ID: ".$currentEvent->id."<br>";
     echo "Event: ".$currentEvent->brief."<br>";
     echo "Event Consequence: ".$currentEvent->conBrief."<br>";
     //return a JSON object for the browser
@@ -241,35 +342,39 @@ elseif ($params->func == 'getStory') {
   /*------------------
     Generate Locations
   -------------------*/
-  //Turn the markov chain into an array
-  $locationArray = explode(",", $params->loc_seq);
-
-  //Quick check to see if the Markov chain is shorter then the requested number of locations OR the action cycle ended early because of respect_death
+  if($params->location_choice == 'markov'){
+    //Turn the markov chain into an array
+    $locationArray = explode(",", $params->loc_seq);
+    //Quick check to see if the Markov chain is shorter then the requested number of events OR the action cycle ended early because of respect_death
+    $len = count($locationArray);//Remove the last empty element after the comma
+    if($len < $params->cycle_count){
+      echo "Short Markov chain generated!<br>";
+      $limit = $len;
+    }
+  }
   if($early_break != 0){
     $limit = $early_break;
   }
   else{
-    $len = count($locationArray);
-    if($len < $params->loc_cycle_count){
-      echo "Short Markov chain generated!<br>";
-      $limit = $len;
-    }
-    else{
-      $limit = $params->loc_cycle_count;
-    }
+    $limit = $params->cycle_count;
   }
 
   //Create the required number of locations echo them and return them as JSON objects
   for ($i=0; $i <= $limit-1; $i++) {
-    $location_id = $locationArray[$i];
-    //Error handling if there's a missing element/location is null/etc
-    $exists = $sm->checkExists('location', $location_id);
-    //Create a new event
-    if($exists == true){
-      $currentLocation = $rc->getLocationByID($location_id);
+    if($params->location_choice == 'markov'){
+      $location_id = $locationArray[$i];
+      //Error handling if there's a missing element/location is null/etc
+      $exists = $sm->checkExists('location', $location_id);
+      //Create a new event
+      if($exists == true){
+        $currentLocation = $rc->getLocationByID($location_id);
+      }
+      //Pick a random event if there is one missing from the Markov chain
+      elseif ($exists == false) {
+        $currentLocation = $rc->pickRandomLocation();
+      }
     }
-    //Pick a random event if there is one missing from the Markov chain
-    elseif ($exists == false) {
+    else{ //must be set to random
       $currentLocation = $rc->pickRandomLocation();
     }
 
@@ -310,19 +415,18 @@ elseif ($params->func == 'getStory') {
 elseif ($params->func == 'evaluateStory') {
   //Update the story's rating
   $result = $main->rateLatestStory($params->rating);
+  $main->echoParams($params); //Return the parsed params to the browser DOM
 
   //Check the result and return it with user facing feedback.
   if($result == true){
     echo "<script>
             $('#evaluateBox').html('Story evaluated as ".$params->rating_hr.".');
           </script><br>Result: ".$result;
-    $main->echoParams($params); //Return the parsed params to the browser DOM
   }
   else{
     echo "<script>
             $('#evaluateBox').html('Something went wrong. Check Params?');
           </script><br>Result: ".$result;
-    $main->echoParams($params); //Return the parsed params to the browser DOM
   }
 }
 else{

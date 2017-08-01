@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!-- Presents a button to generate stories and some information on the state of the knowledge base (retrieved from storydata.php) -->
+<!-- Presents a button to generate stories and an option to view params -->
 <head>
 	<meta charset="utf-8">
 	<link href="http://fonts.googleapis.com/css?family=Lato:100,300,400" rel="stylesheet" type="text/css">
@@ -17,6 +17,11 @@
 		    $('[data-toggle="tooltip"]').tooltip();
 		});
 	</script>
+	<style>
+		/*body{
+			background: linear-gradient(45deg,#30496B,#30B8D2);
+		}*/
+	</style>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Main Test CO880</title>
 </head>
@@ -26,13 +31,36 @@
 		<h1>CO880 Main Test</h1>
 		<form action="javascript:getStory();">
 			<fieldset>
-				<div id="storyParams" class="form-group">
+			 	<div id="dynamicStoryParams" class="form-group">
 					<!--  Params returned here by mainSetup() -->
+				</div>
+				<div id="storyParams">
+					<!-- <div class="row">
+						<label>Action Choice: </label><br>
+						<input type="radio" name="action_choice" value="cm" onchange="disableSeed()" checked> Character Motivation<br>
+						<input type="radio" name="action_choice" value="markov" onchange="disableSeed()" > Markov Chain<br>
+						<input type="radio" name="action_choice" value="random" onchange="disableSeed()"> Random<br>
+					</div>
+					<label>Event Choice: </label><br>
+					<input type="radio" name="event_choice" value="markov" onchange="disableSeed()" checked> Markov Chain<br>
+					<input type="radio" name="event_choice" value="random" onchange="disableSeed()"> Random<br>
+					<label>Location Choice: </label><br>
+					<input type="radio" name="location_choice" value="markov" onchange="disableSeed()" checked> Markov Chain<br>
+					<input type="radio" name="location_choice" value="random" onchange="disableSeed()"> Random<br>
+					<label>Allow Doppelgangers: </label>
+					<select name="no_dop"  id="no_dop">
+					<option value="1" selected>True</option>
+					<option value="0">False</option>
+					</select><br>
+					<label>Respect Death: </label>
+					<select name="respect_death"  id="rd">
+					<option value="1" selected>True</option>
+					<option value="0">False</option>
+					</select><br> -->
 				</div>
 				</br>
 				<div>
 					<input type="submit" value="Generate" class="btn btn-primary"></br></br>
-					<!-- <a class='btn btn-primary' onclick="getStory();">Generate</a></br></br> -->
 				</div>
 			</fieldset>
 		</form>
@@ -44,7 +72,6 @@
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
 		</div>
 	</div>
-
 
 
 	<!-- Modals -->
@@ -63,7 +90,6 @@
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	      </div>
 	    </div>
-
 	  </div>
 	</div>
 

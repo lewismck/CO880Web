@@ -10,18 +10,34 @@
   /*
    * Main queries
    */
+  /*Get the good, bad and unrated story sequences (as 3 rows) */
   $KBQuery = "SELECT
-               GROUP_CONCAT(TRIM(event_sequence) SEPARATOR ',') event_seq
-             , GROUP_CONCAT(TRIM(action_sequence) SEPARATOR ',') action_seq
-             , GROUP_CONCAT(TRIM(location_sequence) SEPARATOR ',') location_seq
-             FROM evaluated_story es
-             WHERE es.rating = 'g';";
+                GROUP_CONCAT(TRIM(es.event_sequence) SEPARATOR ',') event_seq
+              , GROUP_CONCAT(TRIM(es.action_sequence) SEPARATOR ',') action_seq
+              , GROUP_CONCAT(TRIM(es.location_sequence) SEPARATOR ',') location_seq
+              FROM evaluated_story es
+              WHERE es.rating = 'g'
+              UNION SELECT
+               GROUP_CONCAT(TRIM(es.event_sequence) SEPARATOR ',') event_seq
+              , GROUP_CONCAT(TRIM(es.action_sequence) SEPARATOR ',') action_seq
+              , GROUP_CONCAT(TRIM(es.location_sequence) SEPARATOR ',')location_seq
+              FROM evaluated_story es
+              WHERE es.rating = 'b'
+              UNION
+              SELECT
+                GROUP_CONCAT(TRIM(es.event_sequence) SEPARATOR ',') event_seq
+              , GROUP_CONCAT(TRIM(es.action_sequence) SEPARATOR ',') action_seq
+              , GROUP_CONCAT(TRIM(es.location_sequence) SEPARATOR ',') location_seq
+              FROM evaluated_story es
+              WHERE es.rating = 'x'";
 
   $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";//TODO check the seeds all exist in the evaluated story table
 
   $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";//TODO check the seeds all exist in the evaluated story table
 
-  $saveStoryInsert = "INSERT INTO evaluated_story (event_sequence, location_sequence, action_sequence, rating, respect_death, allow_doppelgangers) VALUES";
+  $actionSeedGet = "SELECT a.ac_id, a.brief FROM action a;";//TODO check the seeds all exist in the evaluated story table
+
+  $saveStoryInsert = "INSERT INTO evaluated_story (event_sequence, location_sequence, action_sequence, rating, respect_death, allow_doppelgangers, action_choice, location_choice, event_choice) VALUES";
 
   $getLatestStoryIDQuery = "SELECT story_id FROM evaluated_story WHERE story_id = (SELECT MAX(story_id) FROM evaluated_story);";
 

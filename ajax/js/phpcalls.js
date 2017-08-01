@@ -31,7 +31,7 @@ function mainSetup() {
       url: "ajax/php/main.php?func=setup",
       dataType: "html",
       success: function(response){
-            $("#storyParams").html(response);
+            $("#dynamicStoryParams").html(response);
       }
     });
 }
@@ -46,29 +46,57 @@ function mainSetup() {
  * @param loc_cycle
  * @param respect_death
  * @param no_dop
- * @param use_cm //TODO implement in parseParams
+ * @param use_cm
+ * @param action_choice
+ * @param event_choice
+ * @param location_choice
  * @return
  */
 function getStory() {
   $("#outlineBox").html("Generating..");
-  var ev_cycle_count = ($("#ev_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
-  var ev_seed = $("#ev_seed").val();
-  var loc_cycle_count = ($("#loc_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
-  var loc_seed = $("#loc_seed").val();
-  var ac_cycle_count = $("#ac_cycle_count").val();
+  var cycle_count = $("#cycle_count").val()
+  //var ev_cycle_count = ($("#ev_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
+  //var loc_cycle_count = ($("#loc_cycle_count").val()*1)+2;//Add n to the cycle count to ensure that enough IDs are returned
+  //var ac_cycle_count = $("#ac_cycle_count").val();
+  var ac_choice = $("input:radio[name ='action_choice']:checked").val();
+  var ev_choice = $("input:radio[name ='event_choice']:checked").val();
+  var loc_choice = $("input:radio[name ='location_choice']:checked").val();
+  //var cm = $("#cm").val();
   var no_dop = $("#no_dop").val();
   var rd = $("#rd").val();
   //Build Markov chains of the requested story components
   /*Event*/
-  var ev_n_grams = makeNgrams(ev_seq_kb, 2);
-  var ev_seq = markovIt(ev_seed, ev_n_grams, 2, ev_cycle_count);
+  if(ev_choice == 'markov'){
+    var ev_seed = $("#ev_seed").val();
+    var ev_n_grams = makeNgrams2(ev_seq_kb, 2);
+    var ev_seq = markovIt(ev_seed, ev_n_grams, 2, (cycle_count*1)+2);
+  }
+  else{
+    ev_seq = '';
+  }
   /*Location*/
-  var loc_n_grams = makeNgrams(loc_seq_kb, 2);
-  var loc_seq = markovIt(loc_seed, loc_n_grams, 2, loc_cycle_count);
+  if(loc_choice == 'markov'){
+    var loc_seed = $("#loc_seed").val();
+    var loc_n_grams = makeNgrams2(loc_seq_kb, 2);
+    var loc_seq = markovIt(loc_seed, loc_n_grams, 2, (cycle_count*1)+2);
+  }
+  else{
+    loc_seq = '';
+  }
+
+  /*Action*/
+  if(ac_choice == 'markov'){
+    var ac_seed = $("#ac_seed").val();
+    var ac_n_grams = makeNgrams2(ac_seq_kb, 2);
+    var ac_seq = markovIt(ac_seed, ac_n_grams, 2, (cycle_count*1)+2);
+  }
+  else{
+    ac_seq = '';
+  }
   //var charcount = $("#charcount").val();
     $.ajax({
       type: "GET",
-      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&ev_cycle_count="+$("#ev_cycle_count").val()+"&ac_cycle_count="+ac_cycle_count+"&no_dop="+no_dop+"&rd="+rd+"&loc_cycle_count="+$("#loc_cycle_count").val()+"&loc_seq="+loc_seq,
+      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&cycle_count="+cycle_count+"&no_dop="+no_dop+"&rd="+rd+"&loc_seq="+loc_seq+"&action_choice="+ac_choice+"&ac_seq="+ac_seq+"&event_choice="+ev_choice+"&location_choice="+loc_choice,
       dataType: "html",
       success: function(response){
             $("#storyBox").html(response);
@@ -83,7 +111,7 @@ function getStory() {
 
 
 /*
- * Print an outline of the story
+ * Print an outline of the story to the #outlineBox
  */
 function printOutline2(){
   var rd = $("#rd").val();
@@ -222,6 +250,36 @@ function printLocations(n){
 }
 
 
+function disableSeed(){
+  var ac_choice = $("input:radio[name ='action_choice']:checked").val();
+  var ev_choice = $("input:radio[name ='event_choice']:checked").val();
+  var loc_choice = $("input:radio[name ='location_choice']:checked").val();
+
+  /*Action Choice*/
+  if(ac_choice == 'markov'){
+    $("#ac_seed").prop('disabled', false);;
+  }
+  else{
+    $("#ac_seed").prop('disabled', true);;
+  }
+
+  /*event Choice*/
+  if(ev_choice == 'markov'){
+    $("#ev_seed").prop('disabled', false);;
+  }
+  else{
+    $("#ev_seed").prop('disabled', true);;
+  }
+
+  /*Location Choice*/
+  if(loc_choice == 'markov'){
+    $("#loc_seed").prop('disabled', false);;
+  }
+  else{
+    $("#loc_seed").prop('disabled', true);;
+  }
+
+}
 
 /**
   * exists in the KB and can be used for processing
@@ -247,13 +305,13 @@ function printLocations(n){
    var ngrams = {};
 
    for (var i = 0; i <= src.length-n; i++){
-     var gramWithComma = src.substring(i, i+n);
-     var gram = gramWithComma.replace(/,/g, ' ');
+     var gram = src.substring(i, i+n);
+     //var gram = gramWithComma.replace(/,/g, ' ');
 
      if(!ngrams[gram]){
        ngrams[gram] = [];
      }
-     ngrams[gram].push(src.charAt(i+n).replace(/,/g, ' '));
+     ngrams[gram].push(src.substring(i+n, (i+n)+n));
    }
    console.log(ngrams);
    return ngrams;
