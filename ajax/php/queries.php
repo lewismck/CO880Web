@@ -7,9 +7,10 @@
     e.g checkExistsX where X is action,
     location, event.
   --------------------------------------*/
-  /*
+
+  /*--------------
    * Main queries
-   */
+   --------------*/
   /*Get the good, bad and unrated story sequences (as 3 rows) */
   $KBQuery = "SELECT
                 GROUP_CONCAT(TRIM(es.event_sequence) SEPARATOR ',') event_seq
@@ -93,4 +94,123 @@
   $checkExistsLocation = "SELECT l.loc_id
                           FROM location l
                           WHERE l.loc_id =";
+
+/*---------------
+ * Chart queries
+ ---------------*/
+  /*
+   * Good story pie
+   * random event
+   * markov event
+   * random location
+   * markov location
+   * random action
+   * markov action
+   * cm action
+   * don't allow doppelgangers
+   * allow doppelgangers
+   * don't respect death
+   * respect death
+   */
+   $goodStoryChart = "SELECT
+                    COUNT(*) story_data
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.event_choice = 'random'
+                    UNION all
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.event_choice = 'markov'
+                    UNION ALL
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.location_choice = 'random'
+                    UNION all
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.location_choice = 'markov'
+                    UNION ALL
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.action_choice = 'random'
+                    UNION all
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.action_choice = 'markov'
+                    UNION ALL
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'g' AND es.action_choice = 'cm'
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='g' AND es.allow_doppelgangers  = 0
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='g' AND es.allow_doppelgangers  = 1
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='g' AND es.respect_death  = 0
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='g' AND es.respect_death  = 1;";
+
+  /*
+   * Bad story pie
+   * random event
+   * markov event
+   * random location
+   * markov location
+   * random action
+   * markov action
+   * cm action
+   * don't allow doppelgangers
+   * allow doppelgangers
+   * don't respect death
+   * respect death
+   */
+   $badStoryChart = "SELECT
+                    COUNT(*) story_data
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.event_choice = 'random'
+                    UNION all
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.event_choice = 'markov'
+                    UNION ALL
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.location_choice = 'random'
+                    UNION all
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.location_choice = 'markov'
+                    UNION ALL
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.action_choice = 'random'
+                    UNION all
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.action_choice = 'markov'
+                    UNION ALL
+                    SELECT
+                    COUNT(*)
+                    FROM evaluated_story es
+                    WHERE es.rating = 'b' AND es.action_choice = 'cm'
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='b' AND es.allow_doppelgangers  = 0
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='b' AND es.allow_doppelgangers  = 1
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='b' AND es.respect_death  = 0
+                    UNION ALL
+                    SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='b' AND es.respect_death  = 1;";
+
+
  ?>

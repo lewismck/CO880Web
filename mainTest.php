@@ -11,6 +11,8 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <!-- Project specific JS - Makes calls to different PHP scripts which in turn call functions in this file -->
 	<script src="ajax/js/phpcalls.js"></script>
+	<script src="charts/chart.js"></script>
+	<script src="charts/storyCharts.js"></script>
 	<!-- Initialise tooltips -->
 	<script>
 		$(document).ready(function(){
@@ -66,15 +68,19 @@
 		</form>
 		<div id="outlineBox" class=".col-md-8 .col-md-offset-4"></div></br>
 		<div id="evaluateBox" class=".col-md-8 .col-md-offset-4"></div></br>
+
+
 		<div id="footerBox">
 			</br>
 			<!-- View the passed parameters and returned data  -->
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
+			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#chartsModal">View Charts</button><br><br>
 		</div>
 	</div>
 
 
 	<!-- Modals -->
+	<!-- Params -->
 	<div id="paramsModal" class="modal fade" role="dialog">
 	  <div class="modal-dialog">
 	    <!-- content -->
@@ -93,5 +99,39 @@
 	  </div>
 	</div>
 
+	<!-- Charts and Data -->
+	<div id="chartsModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog modal-lg">
+	    <!-- content -->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Charts and Data</h4>
+	      </div>
+	      <div class="modal-body">
+					<div>
+						<h4 class="text-center">Story Choice Breakdown</h4>
+		        <canvas id="comparison-story-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
+					</div>
+					<div>
+						<h4 class="text-center">Story Constraints</h4>
+						<h5 class="text-center">Binary Toggles</h4>
+						<canvas id="comparison-story-chart-2" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
+					</div>
+					<div>
+						<h4 class="text-center">Action Frequency</h4>
+						<canvas id="action_frequency_chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
+						<h4 class="text-center">Event Frequency</h4>
+						<canvas id="event_frequency_chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
+						<h4 class="text-center">Location Frequency</h4>
+						<canvas id="location_frequency_chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
+					</div>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 </body>
 </html>

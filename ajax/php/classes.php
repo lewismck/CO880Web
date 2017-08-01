@@ -19,18 +19,54 @@ class Main {
 
 
     $KBData = executeQuery($KBQuery);
+    //Good story data
     $event_seq = $KBData[0]['event_seq'];
     $action_seq = $KBData[0]['action_seq'];
     $location_seq = $KBData[0]['location_seq'];
+    //Bad story data
+    $event_seq_b = $KBData[1]['event_seq'];
+    $action_seq_b = $KBData[1]['action_seq'];
+    $location_seq_b = $KBData[1]['location_seq'];
+    //Seeds
     $event_seeds = executeQuery($eventSeedGet);
     $location_seeds = executeQuery($locationSeedGet);
     $action_seeds = executeQuery($actionSeedGet);
     //return a KB_Data object
-    $kbData = new KB_Data($action_seq, $event_seq, $location_seq, $event_seeds, $location_seeds, $action_seeds);
+    $kbData = new KB_Data($action_seq, $event_seq, $location_seq, $event_seeds, $location_seeds, $action_seeds, $action_seq_b, $event_seq_b, $location_seq_b);
     return $kbData;
   }
 
+  /*
+   * Return an array containing good story constraint counts
+   * Used for putting data into a Radar and doughnut charts
+   */
+  public function getStoryData($goodOrBad){
+    //Use the global queries from queries.php
+    global $goodStoryChart, $badStoryChart;
 
+    //Choose good or bad story data to return
+    if($goodOrBad == 'g'){
+      $storyQuery = executeQuery($goodStoryChart);
+    }
+    else{
+      $storyQuery = executeQuery($badStoryChart);
+    }
+
+    //construct a StoryData object and return it.
+    $storyData = new StoryData($storyQuery[0]['story_data'], $storyQuery[1]['story_data'], $storyQuery[2]['story_data'], $storyQuery[3]['story_data'], $storyQuery[4]['story_data'],
+    $storyQuery[5]['story_data'], $storyQuery[6]['story_data'], $storyQuery[7]['story_data']
+    ,$storyQuery[8]['story_data']
+    ,$storyQuery[9]['story_data']
+    ,$storyQuery[10]['story_data']);
+
+    return $storyData;
+  }
+
+  public function turnKBDataToArray($kbData){
+    $kbToArray = explode(",", $kbData);
+    $sortedArray = array_count_values($kbToArray);
+    return $sortedArray;
+  }
   /*
    * @param array (_GET/_POST) containing parameters to be parsed.
    * @return a ParsedParams object with the fields in $params filled
@@ -125,7 +161,52 @@ class Main {
   }
 }
 
+/*
+ * Class to store some data used for building charts
+ */
+class StoryData {
+  /*
+   * Good story pie
+   * random event
+   * markov event
+   * random location
+   * markov location
+   * random action
+   * markov action
+   * cm action
+   * don't allow doppelgangers
+   * allow doppelgangers
+   * don't respect death
+   * respect death
+   */
+   public $random_event;
+   public $markov_event;
+   public $random_location;
+   public $markov_location;
+   public $random_action;
+   public $markov_action;
+   public $cm_action;
+   public $no_doppelgangers;
+   public $allow_doppelgangers;
+   public $ignore_death;
+   public $respect_death;
 
+   //constructor
+   public function __construct($random_event, $markov_event, $random_location, $markov_location, $random_action, $markov_action, $cm_action, $no_doppelgangers,$allow_doppelgangers,$ignore_death,$respect_death ){
+     $this->random_event = $random_event;
+     $this->markov_event = $markov_event;
+     $this->random_location = $random_location;
+     $this->markov_location = $markov_location;
+     $this->random_action = $random_action;
+     $this->markov_action = $markov_action;
+     $this->cm_action = $cm_action;
+     $this->no_doppelgangers = $no_doppelgangers;
+     $this->allow_doppelgangers = $allow_doppelgangers;
+     $this->ignore_death = $ignore_death;
+     $this->respect_death = $respect_death;
+   }
+  //echo "<script>var re = ".$goodStoryData[0]['story_data'].";</script>";
+}
 /*
  * Class for holding data from the knowledge base
  * It's values can be returned to the browser as JSON objects
@@ -135,18 +216,24 @@ class KB_Data {
   public $action_seq;
   public $event_seq;
   public $location_seq;
+  public $action_seq_b;
+  public $event_seq_b;
+  public $location_seq_b;
   public $event_seeds;
   public $location_seeds;
   public $action_seeds;
 
   //constructor
-  public function __construct($action_seq, $event_seq, $location_seq, $event_seeds, $location_seeds, $action_seeds){
+  public function __construct($action_seq, $event_seq, $location_seq, $event_seeds, $location_seeds, $action_seeds,$action_seq_b, $event_seq_b, $location_seq_b){
     $this->action_seq = $action_seq;
     $this->event_seq = $event_seq;
     $this->location_seq = $location_seq;
     $this->event_seeds = $event_seeds;
     $this->location_seeds = $location_seeds;
     $this->action_seeds = $action_seeds;
+    $this->action_seq_b = $action_seq_b;
+    $this->event_seq_b = $event_seq_b;
+    $this->location_seq_b = $location_seq_b;
   }
 }
 

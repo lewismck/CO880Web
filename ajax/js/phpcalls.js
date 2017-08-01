@@ -32,9 +32,11 @@ function mainSetup() {
       dataType: "html",
       success: function(response){
             $("#dynamicStoryParams").html(response);
+            createNewStoryChart();
       }
     });
 }
+
 
 /*
  * TODO Hardcoded value getting from inputs now - will make function accept parameters later
