@@ -31,7 +31,7 @@ CREATE TABLE `event_consequence` (
   PRIMARY KEY (`con_id`),
   KEY `event_id` (`event_id`),
   CONSTRAINT `event_consequence_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `event` (`event_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `event_consequence` (
 
 LOCK TABLES `event_consequence` WRITE;
 /*!40000 ALTER TABLE `event_consequence` DISABLE KEYS */;
-INSERT INTO `event_consequence` VALUES (1,3,'Out of town investigators arrive and everyone is a suspect','an FBI agent is called from out of town to aid in the investigation, murder is suspected and everyone\'s secrets are at risk as they\'re placed under scrutiny of the law','unsettling'),(3,5,'More police arrive in town from all accross the country','as police presence increases and scrutiny on the locals rises, the atmosphere becomes unpleasant','unsettling'),(4,6,'the sawmill is burned to the ground overnight, the town is shocked','The sawmill is set ablaze late at night and burns throroughly before any authorities can arrive. It seems no one was harmed, but the mill is no more and there\'s little evidence','shocking');
+INSERT INTO `event_consequence` VALUES (1,3,'Out of town investigators arrive and everyone is a suspect','an FBI agent is called from out of town to aid in the investigation, murder is suspected and everyone\'s secrets are at risk as they\'re placed under scrutiny of the law','unsettling'),(3,5,'More police arrive in town from all accross the country','as police presence increases and scrutiny on the locals rises, the atmosphere becomes unpleasant','unsettling'),(4,6,'the sawmill is burned to the ground overnight, the town is shocked','The sawmill is set ablaze late at night and burns throroughly before any authorities can arrive. It seems no one was harmed, but the mill is no more and there\'s little evidence','shocking'),(5,7,'the expeted frontrunner is elected','everybody expected them to win, why wouldn\'t they, they were the best choice','unsurprising'),(6,8,'several locals go missing in the mists','with the fog this thick, several locals are not accounted for','sad'),(7,9,'around town people are bemused by the sounds','people struggle to locate the source of the sound, it seems ever present and is hard to pin down','spooky'),(8,10,'the storm arrives, bringing hammering rain and deafening thunder','thunder and lightening deafen and blind the residents who look into the storm','scary');
 /*!40000 ALTER TABLE `event_consequence` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-11 14:27:48
+-- Dump completed on 2017-08-02  9:25:59

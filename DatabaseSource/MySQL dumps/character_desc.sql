@@ -27,7 +27,7 @@ CREATE TABLE `character_desc` (
   `age` int(11) NOT NULL,
   `temperment` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`desc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `character_desc` (
 
 LOCK TABLES `character_desc` WRITE;
 /*!40000 ALTER TABLE `character_desc` DISABLE KEYS */;
-INSERT INTO `character_desc` VALUES (1,27,'lethargic, addicted to prescription drugs that relax you.. a lot'),(2,38,'lazy, uncooperative, selfish and self motivated'),(3,33,'Mild mannered FBI agent, in love with rural life'),(4,37,'Respected sheriff, head of local police department'),(5,19,'Well known high school student'),(6,47,'Known for compulsive singing and dancing, a lawyer by trade'),(7,47,'Wealthy business owner, proprietor of Great Northern Hotel'),(8,18,'Inquisitive and sullen teenager'),(9,63,'Divines fortunes and the future through a log carried everywhere with them'),(10,52,'eccentric local psychiatrist, obsessed with Hawaii');
+INSERT INTO `character_desc` VALUES (1,27,'lethargic, addicted to prescription drugs that relax you.. a lot'),(2,38,'lazy, uncooperative, selfish and self motivated'),(3,33,'Mild mannered FBI agent, in love with rural life'),(4,37,'Respected sheriff, head of local police department'),(5,19,'Well known high school student'),(6,47,'Known for compulsive singing and dancing, a lawyer by trade'),(7,47,'Wealthy business owner, proprietor of Great Northern Hotel'),(8,18,'Inquisitive and sullen teenager'),(9,63,'Divines fortunes and the future through a log carried everywhere with them'),(10,52,'eccentric local psychiatrist, obsessed with Hawaii'),(11,0,'Responsible for upholding the law.'),(12,10000,'A mysterious glowing cloud'),(13,22,'Son of Major Briggs');
 /*!40000 ALTER TABLE `character_desc` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-11 14:21:16
+-- Dump completed on 2017-08-02  9:31:12

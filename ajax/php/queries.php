@@ -9,7 +9,7 @@
   --------------------------------------*/
 
   /*--------------
-   * Main queries
+    Main queries
    --------------*/
   /*Get the good, bad and unrated story sequences (as 3 rows) */
   $KBQuery = "SELECT
@@ -32,11 +32,11 @@
               FROM evaluated_story es
               WHERE es.rating = 'x'";
 
-  $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";//TODO check the seeds all exist in the evaluated story table
+  $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";//TODO check the seeds all exist in the evaluated story table?
 
-  $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";//TODO check the seeds all exist in the evaluated story table
+  $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";//TODO check the seeds all exist in the evaluated story table?
 
-  $actionSeedGet = "SELECT a.ac_id, a.brief FROM action a;";//TODO check the seeds all exist in the evaluated story table
+  $actionSeedGet = "SELECT a.ac_id, a.brief FROM action a;";//TODO check the seeds all exist in the evaluated story table?
 
   $saveStoryInsert = "INSERT INTO evaluated_story (event_sequence, location_sequence, action_sequence, rating, respect_death, allow_doppelgangers, action_choice, location_choice, event_choice) VALUES";
 
@@ -46,10 +46,11 @@
 
   $saveCharacterInsert = "INSERT INTO evaluated_characters (character_obj, story_id) VALUES(";
 
-  /*
-  * ReflectionCycle queries
-  *
-  */
+  /*-------------------------
+    Reflection Cycle Queries
+              &
+      StoryMaker Queries
+   ------------------------*/
   $actionStatementGet = "SELECT action.*
                         , ac.brief AS con_brief
                         , ac.long_desc AS con_long
@@ -64,10 +65,6 @@
                         FROM action
                         JOIN action_consequence ac ON action.consequence=ac.con_id ";
 
-  /*
-  *StoryMaker queries
-  *
-  */
   $eventStatementGet = "SELECT event.*
                         , ec.brief AS con_brief
                         , ec.long_desc AS con_long
@@ -95,9 +92,9 @@
                           FROM location l
                           WHERE l.loc_id =";
 
-/*---------------
- * Chart queries
- ---------------*/
+/*------------------------
+  Chart and Graph queries
+ -----------------------*/
   /*
    * Good story pie
    * random event
@@ -112,7 +109,7 @@
    * don't respect death
    * respect death
    */
-   $goodStoryChart = "SELECT
+  $goodStoryChart = "SELECT
                     COUNT(*) story_data
                     FROM evaluated_story es
                     WHERE es.rating = 'g' AND es.event_choice = 'random'
@@ -169,7 +166,7 @@
    * don't respect death
    * respect death
    */
-   $badStoryChart = "SELECT
+  $badStoryChart = "SELECT
                     COUNT(*) story_data
                     FROM evaluated_story es
                     WHERE es.rating = 'b' AND es.event_choice = 'random'

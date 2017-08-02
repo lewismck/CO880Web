@@ -31,7 +31,7 @@ CREATE TABLE `s_character` (
   PRIMARY KEY (`c_id`),
   KEY `s_character` (`c_desc`),
   CONSTRAINT `s_character_ibfk_1` FOREIGN KEY (`c_desc`) REFERENCES `character_desc` (`desc_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `s_character` (
 
 LOCK TABLES `s_character` WRITE;
 /*!40000 ALTER TABLE `s_character` DISABLE KEYS */;
-INSERT INTO `s_character` VALUES (1,'Kate','Gompert','f',1),(2,'George','Costanza','m',2),(3,'Dale','Cooper','m',3),(4,'Harry','Truman','m',4),(5,'Laura','Palmer','f',5),(6,'Leland','Palmer','m',6),(7,'Benjamin','Horne','m',7),(8,'Audrey','Horne','f',8),(9,'Log','Lady','f',9),(10,'Dr. Lawrence','Jacoby','m',10);
+INSERT INTO `s_character` VALUES (1,'Kate','Gompert','f',1),(2,'George','Costanza','m',2),(3,'Dale','Cooper','m',3),(4,'Harry','Truman','m',4),(5,'Laura','Palmer','f',5),(6,'Leland','Palmer','m',6),(7,'Benjamin','Horne','m',7),(8,'Audrey','Horne','f',8),(9,'Log','Lady','f',9),(10,'Dr. Lawrence','Jacoby','m',10),(11,'The Sherrif\'s Secret Police',' ','?',11),(12,'The Glow Cloud',' ','?',12),(13,'Bobby','Briggs','M',13);
 /*!40000 ALTER TABLE `s_character` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-11 14:26:33
+-- Dump completed on 2017-08-02  9:30:54

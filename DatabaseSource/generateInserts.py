@@ -51,7 +51,6 @@ for i in event_consequences:
 
 # Actions
 actions = '''goes exploring in the woods-heads into the woods in a spirit of adventure-exciting
-buys a lottery ticket-purchases a ticket in the small stakes local lottery-exciting
 brief1-long_desc1-tone1'''.split('\n')
 print('\nACTIONS\n')
 for i in actions:
@@ -59,11 +58,10 @@ for i in actions:
   print('''INSERT INTO action (brief, long_desc, tone) VALUES('%s', '%s', '%s');''' %(B[0], B[1], B[2]))
 
 # Event Consequences
-action_consequences = '''gets lost-after hours wandering, realises they have no idea of the way out-spooky
-wins the local lottery-collects their winnings and is ecstacic with the outcome-exciting
+action_consequences = '''brief-long_desc-tone
 brief1-long_desc1-tone1'''.split('\n')
 
 print('\nACTION CONSEQUENCES\n')
 for i in action_consequences:
   B = i.split('-')
-  print('''INSERT INTO action_consequence (brief, long_desc, tone, ac_id) VALUES('%s', '%s', '%s', (SELECT MAX(ac_id) FROM action));''' %(B[0], B[1], B[2]))
+  print('''INSERT INTO action_consequence (brief, long_desc, tone, ac_id) VALUES('%s', '%s', '%s', (SELECT MAX(ac_id) FROM action);''' %(B[0], B[1], B[2]))

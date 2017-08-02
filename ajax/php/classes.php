@@ -1,6 +1,6 @@
 <?php
 /*--------------------------------------------------------------------------------------
- Classes for the main story components: Person, Location, Action, Event (& their consequences -- now deprecated)
+ Classes for the main story components: Person, Location, Action, Event (and their consequences -- now deprecated)
  Also contains a StoryMaker class with functions for creating and returning the story components and a ReflectionCycle class for generating actions/events/locations in loops
  ---------------------------------------------------------------------------------------*/
 
@@ -8,10 +8,10 @@ require_once('queries.php'); //Require the queries.php file - contains all the S
 
 class Main {
 
-  /*
+  /**
    * @return a KB_Data object with it's attributes completed
    * Query all the story data from the KB and set it as javascript variables
-   */
+   **/
   public function setup(){
 
     //Use the global queries from queries.php
@@ -36,10 +36,11 @@ class Main {
     return $kbData;
   }
 
-  /*
-   * Return an array containing good story constraint counts
+  /**
+   * @param a single letter (g/b) indicating if good or bad story data is requested
+   * @return an array containing good story constraint counts
    * Used for putting data into a Radar and doughnut charts
-   */
+   **/
   public function getStoryData($goodOrBad){
     //Use the global queries from queries.php
     global $goodStoryChart, $badStoryChart;
@@ -62,17 +63,23 @@ class Main {
     return $storyData;
   }
 
+  /**
+   * @param a string containing a list of values
+   * @return an array list of the values with their frequency in key-value pairs
+   * Turn a string from the KB into a list containing key-value pairs
+   * of items and their frequency
+   **/
   public function turnKBDataToArray($kbData){
     $kbToArray = explode(",", $kbData);
     $sortedArray = array_count_values($kbToArray);
     return $sortedArray;
   }
-  /*
+  /**
    * @param array (_GET/_POST) containing parameters to be parsed.
    * @return a ParsedParams object with the fields in $params filled
    * in
    * TODO sanitise inputs
-   */
+   **/
   public function parseParams($params){
     $parsedParams = new ParsedParams();
     foreach($params as $key => $value){
@@ -134,10 +141,10 @@ class Main {
     return $parsedParams;
   }
 
-  /*
+  /**
    * @param the params object (or any key value array really)
    * @return echoes the key value pairs of $params
-   */
+   **/
   function echoParams($params){
     echo "<h3>Params:</h3>";
     foreach ($params as $key => $value) {
@@ -145,11 +152,11 @@ class Main {
     }
   }
 
-  /*
+  /**
    * @param the rating 'g'/'b' of the story
    * @return true if the evaluated_story row was updated succesfully
    * else false
-   */
+   **/
   public function rateLatestStory($rating){
     global $getLatestStoryIDQuery, $updateStoryRating;
     $latest_id_request = executeQuery($getLatestStoryIDQuery);
@@ -207,6 +214,7 @@ class StoryData {
    }
   //echo "<script>var re = ".$goodStoryData[0]['story_data'].";</script>";
 }
+
 /*
  * Class for holding data from the knowledge base
  * It's values can be returned to the browser as JSON objects
@@ -291,7 +299,9 @@ class Person {
    //$this->$emotional_state = $emotional_state;
   }
 
-  // Return a formatted string containing some character information
+  /**
+   * @return a formatted string containing some character information
+   **/
   public function describe() {
    return "Name: " . $this->firstname . " " . $this->lastname . "<br>"
           ."Age: ". $this->age ."<br>Gender: " . $this->gender . "<br>"
@@ -302,6 +312,11 @@ class Person {
    $this->isAlive = false;
   }
 
+  /**
+   * @param the emotional_state to update the character and their arc with
+   * @param the description of the emotional state
+   * Updates the characters current es and arcs with the specified values
+   **/
   public function updateES($emotional_state, $es_desc){
    $this->emotional_state = $this->emotional_state + $emotional_state;
    $this->es_desc = $es_desc;
@@ -336,33 +351,31 @@ class Story {
   public $n_gram_size;
 
 
-  /*
+  /**
    * @param an action ID to add to the action sequence
-   */
+   **/
   public function updateActionSeq($action_id){
     $this->action_sequence.=",".$action_id;
   }
 
-  /*
+  /**
    * @param an event ID to add to the event sequence
-   */
+   **/
   public function updateEventSeq($event_id){
     $this->event_sequence.=",".$event_id;
   }
 
-  /*
+  /**
    * @param a location ID to add to the location sequence
-   */
+   **/
   public function updateLocationSeq($location_id){
     $this->location_sequence.=",".$location_id;
   }
 
-  /*
-   * Insert the story to the evaluated_story table and the characters into the character_obj table
-   * @Param the first character
-   * @Param the second character
-   * @Return true if succesful else return the error
-   */
+  /**
+   * @return true if succesful else return the error
+   * Insert the story to the evaluated_story table
+   **/
   public function saveStory(){
     global $saveStoryInsert;
 
@@ -378,11 +391,11 @@ class Story {
       return "Story Insert: ".$result;
     }
   }
-/*
+/**
  * Insert the characters into the character_obj table
- * @Param the character to insert
- * @Return true if succesful else return the error
- */
+ * @param the character to insert
+ * @return true if succesful else return the error
+ **/
   public function saveCharacter($char1){
     global $saveCharacterInsert;
     //Serialize the character
@@ -539,14 +552,14 @@ class ReflectionCycle{
    *TODO have an actionCycle that repeats until 1 character is happy or both characters are happy/unhappy
    */
 
-   /*
+   /**
     * Pick an action based on character's emotional states
     * TODO refactor so only 1 return ...
     * @param char1 a person object type
     * @param char2 a person object type
-    * @Return an action - also updates c1_es and c2_es and arcs
+    * @return an action - also updates c1_es and c2_es and arcs
     * Then run cycle again - can be done in a loop in another function
-    */
+    **/
     public function actionCycleCM($char1, $char2){
       //Use the global queries
       global $actionStatementGet;
@@ -573,12 +586,12 @@ class ReflectionCycle{
       return $currentAction;
     }
 
-    /*
+    /**
      * Pick a random action and update the characters
      * @param char1 a person object type
      * @param char2 a person object type
-     * @Return an action - also updates c1_es and c2_es and arcs
-     */
+     * @return an action - also updates c1_es and c2_es and arcs
+     **/
      public function actionCycleRandom($char1, $char2){
        //Use the global queries
        global $actionStatementGet;
@@ -588,11 +601,11 @@ class ReflectionCycle{
        return $currentAction;
      }
 
-    /*
+    /**
      * @param id of the action to return
      * @return action with the specified ac_id
      * TODO sanitise the ID passed in?
-     */
+     **/
      public function getActionByID(int $ac_id, $char1, $char2){
         global $actionStatementGet;
         $actionStatement = $actionStatementGet."AND action.ac_id = ".$ac_id." ;";
@@ -601,14 +614,14 @@ class ReflectionCycle{
         return $action;
      }
 
-   /*
+   /**
     * Update the characters based on the action
     * @param the action to update characters from
     * @param char1 a person object type
     * @param char2 a person object type
     * @param the character that should be updated
     * @Return an action - also updates c1_es and c2_es and arcs
-    */
+    **/
     public function updateCharFromAction($action, $char1, $char2, $charToUpdate){
      if($action->solo_action == 1){ //if it's a solo action update the right character
        if($charToUpdate == 'c1'){
@@ -636,33 +649,33 @@ class ReflectionCycle{
         return $this->reflectSM->getAction($actionStatement);
      }
 
-     /*
+     /**
       * @param id of the event to return
       * @return event with the specified event_id
       * TODO sanitise the ID passed in?
       * TODO Move to StoryMaker class
-      */
+      **/
      public function getEventByID($event_id){
        global $eventStatementGet;
        $eventStatement =  $eventStatementGet." WHERE event.event_id = ".$event_id.";";
        return $this->reflectSM->getEvent($eventStatement);
      }
 
-    /*
+    /**
      * Pick a new event at random and return it
-     */
+     **/
     public function pickRandomEvent(){
       global $eventStatementGet;
       $eventStatement =  $eventStatementGet." ORDER BY RAND() LIMIT 1;";
       return $this->reflectSM->getEvent($eventStatement);
     }
 
-    /*
+    /**
      * @param id of the location to return
      * @return location with the specified location_id
      * TODO sanitise the ID passed in?
      * TODO Move to StoryMaker class
-     */
+     **/
     public function getLocationByID($loc_id){
       global $locationStatementGet;
       $locationStatement = $locationStatementGet." WHERE location.loc_id = ".$loc_id.";";
@@ -671,7 +684,7 @@ class ReflectionCycle{
       return $this->reflectSM->getLocation($locationStatement);
     }
 
-   /*
+   /**
     * Pick a new event at random and return it
     * eventCycle should get
     */
@@ -685,7 +698,7 @@ class ReflectionCycle{
  }
 
 
-/*
+/**
  * Currently !!Deprecated!! ...JS implementation used instead in AJAX call
  *
  */
@@ -724,12 +737,12 @@ class Markov {
 }
 
 
-/*
+/**
  *For testing the getLocation/Action/Event functions used in getStory.php
  */
 class StoryMaker {
 
-  /*
+  /**
    * @return a person object
    * Make a random character and return an object of type Person
    */
@@ -740,7 +753,7 @@ class StoryMaker {
      return $this->returnCharacter($characterStatement);
    }
 
-   /*
+   /**
     * @param the id of the character to create
     * @return a person object
     * Make a character based on the ID return an object of type Person (chooses attributes logically)
@@ -752,7 +765,7 @@ class StoryMaker {
       return $this->returnCharacter($characterStatement);
     }
 
-    /*
+    /**
      * @param the id of the character NOT to create
      * @return a person object
      * Make a random character who isn't identified by the ID. Return an object of type Person (chooses attributes logically)
@@ -764,7 +777,7 @@ class StoryMaker {
        return $this->returnCharacter($characterStatement);
      }
 
-   /*
+   /**
     * @param a SQL statement returning the character constructor attributes
     * @return a character using the results returned by the statement or false
     */
@@ -784,7 +797,7 @@ class StoryMaker {
       }
     }
 
-  /*
+  /**
    * execute LOCATION statements
    * @param a sql query returning one row from
    * the location table
@@ -806,7 +819,7 @@ class StoryMaker {
     }
   }
 
-  /*
+  /**
    * Execute ACTION statements
    * @param a sql query returning a row from action and
    * the consequence from action_consequence as con_brief
@@ -827,7 +840,7 @@ class StoryMaker {
     }
   }
 
-  /*
+  /**
    * Execute EVENT statements
    * @Param a query returning event class constructor params
    * @Return an event else false
@@ -848,13 +861,13 @@ class StoryMaker {
     }
    }
 
-   /*
+   /**
     * @param the table to check the element exists in
     * @param the id of the element to check for
     * @return true if the element exists, else false
     */
    public function checkExists($table, $value){
-     /*Include the global queries variables*/
+     /**Include the global queries variables*/
      global $checkExistsEvent, $checkExistsAction, $checkExistsLocation;
      //Quick sanity check of $value
      if($value == '' || $value == ', '){
@@ -882,7 +895,7 @@ class StoryMaker {
      }
    }
 
-   /*
+   /**
     * !!Deprecated!!
     *Return the frequency of the event, location and action occurences in the kb
     *TODO Move out of StoryMaker class

@@ -70,7 +70,6 @@ if($params->func == 'setup'){
           var loc_values = [];
           var gsd = ".$passableGSD.";
           var bsd = ".$passableBSD.";
-
         </script>";
 
   //Random event seed:
@@ -102,14 +101,18 @@ if($params->func == 'setup'){
   $locationCount = count($kbData->location_seeds);
   $actionCount = count($kbData->action_seeds);
 
-  //Option for cycle count
+  /*-------------------
+       Cycle Count
+  --------------------*/
   echo "<label>Cycle Count: </label><select id=\"cycle_count\">
           <option value=\"1\" selected>1</option>";
   for ($i = 2; $i <= 10; $i++) {
     echo "<option value='".$i."'>".$i."</option>";
   }
   echo "</select><br>";
-  //Option for action seed
+  /*-------------------
+       Action Seed
+  --------------------*/
   if($actionCount != 0){
     echo "<label>Action Seed: </label><select id='ac_seed' disabled=\"true\">
           <option value='".$randomActionSeed."' selected>Random</option>";
@@ -128,7 +131,9 @@ if($params->func == 'setup'){
     }
     echo "</select><br>";
   }
-  //Option for event seed
+  /*-------------------
+        Event Seed
+  --------------------*/
   if($eventCount != 0){
     echo "<label>Event Seed: </label><select id='ev_seed'>
           <option value='".$randomEventSeed."' selected>Random</option>";
@@ -148,7 +153,9 @@ if($params->func == 'setup'){
     echo "</select><br>";
   }
   // echo "<label>Event Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ev_cycle_count\"></input><br>";
-  //Option for location Seed
+  /*-------------------
+      Location Seed
+  --------------------*/
   if($locationCount != 0){
     echo "<label>Location Seed: </label><select id='loc_seed'>
           <option value='".$randomLocationSeed."' selected>Random</option>";
@@ -167,27 +174,30 @@ if($params->func == 'setup'){
     }
     echo "</select><br>";
   }
-
+  /*-------------------
+      Static params
+  --------------------*/
   echo "<label>Action Choice: </label><br>
-         <input type=\"radio\" name=\"action_choice\" value=\"cm\" onchange=\"disableSeed()\" checked> Character Motivation<br>
-         <input type=\"radio\" name=\"action_choice\" value=\"markov\" onchange=\"disableSeed()\" > Markov Chain<br>
-         <input type=\"radio\" name=\"action_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-          <label>Event Choice: </label><br>
-          <input type=\"radio\" name=\"event_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
-          <input type=\"radio\" name=\"event_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+        <input type=\"radio\" name=\"action_choice\" value=\"cm\" onchange=\"disableSeed()\" checked> Character Motivation<br>
+        <input type=\"radio\" name=\"action_choice\" value=\"markov\" onchange=\"disableSeed()\" > Markov Chain<br>
+        <input type=\"radio\" name=\"action_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+        <label>Event Choice: </label><br>
+        <input type=\"radio\" name=\"event_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
+        <input type=\"radio\" name=\"event_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
         <label>Location Choice: </label><br>
-         <input type=\"radio\" name=\"location_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
-         <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-        <label>Allow Doppelgangers: </label>
-      	<select name=\"no_dop\"  id=\"no_dop\">
-      		<option value=\"1\" selected>True</option>
-      		<option value=\"0\">False</option>
-      	</select><br>
-      	<label>Respect Death: </label>
-      	<select name=\"respect_death\"  id=\"rd\">
-      		<option value=\"1\" selected>True</option>
-      		<option value=\"0\">False</option>
-      	</select><br>";
+        <input type=\"radio\" name=\"location_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
+        <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+        <label>Allow Doppelgangers: </label><br>
+        <label class=\"switch\">
+	  	    <input type=\"checkbox\" id=\"no_dop\">
+  	      <span class=\"slider round\"></span>
+        </label>
+      	<br>
+      	<label>Respect Death: </label><br>
+        <label class=\"switch\">
+	  	    <input type=\"checkbox\" id=\"rd\">
+  	      <span class=\"slider round\"></span>
+        </label><br>";
 
 }
 
@@ -217,21 +227,6 @@ elseif ($params->func == 'getStory') {
   $story->action_choice = $params->action_choice;
   $story->location_choice = $params->location_choice;
   $story->event_choice = $params->event_choice;
-  // if($params->action_choice == 'cm'){
-  //   $story->character_motive = 1;
-  //   $story->markov_action = 0;
-  //   $story->random_action = 0;
-  // }
-  // if($params->action_choice == 'markov'){
-  //   $story->character_motive = 0;
-  //   $story->markov_action = 1;
-  //   $story->random_action = 0;
-  // }
-  // if($params->action_choice == 'random'){
-  //   $story->character_motive = 0;
-  //   $story->markov_action = 0;
-  //   $story->random_action = 1;
-  // }
 
   /*-------------------
     Generate Characters

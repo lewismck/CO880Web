@@ -13,17 +13,8 @@
 	<script src="ajax/js/phpcalls.js"></script>
 	<script src="charts/chart.js"></script>
 	<script src="charts/storyCharts.js"></script>
-	<!-- Initialise tooltips -->
-	<script>
-		$(document).ready(function(){
-		    $('[data-toggle="tooltip"]').tooltip();
-		});
-	</script>
-	<style>
-		/*body{
-			background: linear-gradient(45deg,#30496B,#30B8D2);
-		}*/
-	</style>
+	<!-- Project specific styles -->
+	<link rel="stylesheet" href="Styles/main.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Main Test CO880</title>
 </head>
@@ -60,13 +51,16 @@
 					<option value="0">False</option>
 					</select><br> -->
 				</div>
-				</br>
+				<!-- </br> -->
 				<div>
 					<input type="submit" value="Generate" class="btn btn-primary"></br></br>
 				</div>
 			</fieldset>
 		</form>
-		<div id="outlineBox" class=".col-md-8 .col-md-offset-4"></div></br>
+		<blockquote>
+			<div id="outlineBox" class=".col-md-8 .col-md-offset-4"></div>
+		</blockquote>
+		</br>
 		<div id="evaluateBox" class=".col-md-8 .col-md-offset-4"></div></br>
 
 

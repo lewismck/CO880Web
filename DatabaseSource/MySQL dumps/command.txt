@@ -1,0 +1,1 @@
+mysqldump -p -h dragon.kent.ac.uk -u lam54 lam54 TABLE_NAME[S] > action.sql

@@ -31,7 +31,7 @@ CREATE TABLE `action` (
   PRIMARY KEY (`ac_id`),
   KEY `consequence` (`consequence`),
   CONSTRAINT `action_ibfk_1` FOREIGN KEY (`consequence`) REFERENCES `action_consequence` (`con_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `action` (
 
 LOCK TABLES `action` WRITE;
 /*!40000 ALTER TABLE `action` DISABLE KEYS */;
-INSERT INTO `action` VALUES (1,'cries in front of','starts to bow their head, lips quivering, eyes welling up, and begins to sob','sad',1),(2,'drinks coffee with','enjoys a cup of damn fine freshly brewed coffee','pleasant',2),(3,'hallucinates BOB in front of','Begins to stammer and point into thin air, then starts screaming','terrifying',3),(4,'murders','poisons with a blow dart','scary',4),(5,'stalks','begins following and cataloguing the movements and interactions of','creepy',5);
+INSERT INTO `action` VALUES (1,'cries in front of','starts to bow their head, lips quivering, eyes welling up, and begins to sob','sad',1),(2,'drinks coffee with','enjoys a cup of damn fine freshly brewed coffee','pleasant',2),(3,'hallucinates BOB in front of','Begins to stammer and point into thin air, then starts screaming','terrifying',3),(4,'murders','poisons with a blow dart','scary',4),(5,'stalks','begins following and cataloguing the movements and interactions of','creepy',5),(6,'considers the dog park near','considers the existence and purpose of the dog park, this is a thought crime, and is shocking to','spooky',6),(7,'listens to the Postal Service with','puts on records by the Postal Service and enjoys them with','nice',7),(8,'goes on a roadtrip with','hits the road, with some nice music and no real destination in mind with','exciting',8),(9,'chases','relentlessly runs after','scary',9),(10,'has a surreal dream involving','dreams something dark and mysterious featuring','spooky',10),(11,'enters the Black Lodge with','following clues and cryptic messages discovers an entrance to the Black Lodge with','spooky',11),(12,'is run over by','Hit by a truck whilst crossing the road and instantly killed','horrifying',12),(13,'goes exploring in the woods','heads into the woods in a spirit of adventure','exciting',13),(14,'buys a lottery ticket','purchases a ticket in the small stakes local lottery','exciting',14);
 /*!40000 ALTER TABLE `action` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-11 14:26:59
+-- Dump completed on 2017-08-02  9:24:49

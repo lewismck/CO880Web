@@ -31,7 +31,7 @@ CREATE TABLE `event` (
   PRIMARY KEY (`event_id`),
   KEY `consequence` (`consequence`),
   CONSTRAINT `event_ibfk_1` FOREIGN KEY (`consequence`) REFERENCES `event_consequence` (`con_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `event` (
 
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
-INSERT INTO `event` VALUES (3,'The body of a local is found','The discovery of a body sparks an investigation involving the FBI and the local Sherrifs, unsettling the whole town.','unsettling',1),(5,'A town wide drug smuggling operation is revealed','A border crossing drug dealing empire is uncovered, probably involving several local businesses and prominent figures','surprising',3),(6,'A plot to burn down the Sawmill is hatched','An unknown group, or possibly a lone actor has begun to work on a way to burn down the local saw mill, perhaps for insurance or revenge','exciting',4);
+INSERT INTO `event` VALUES (3,'The body of a local is found','The discovery of a body sparks an investigation involving the FBI and the local Sherrifs, unsettling the whole town.','unsettling',1),(5,'A town wide drug smuggling operation is revealed','A border crossing drug dealing empire is uncovered, probably involving several local businesses and prominent figures','surprising',3),(6,'A plot to burn down the Sawmill is hatched','An unknown group, or possibly a lone actor has begun to work on a way to burn down the local saw mill, perhaps for insurance or revenge','exciting',4),(7,'a local election is held','an election is held to elect new local council members','surprising',5),(8,'a creeping fog rolls into town','a thick, creeping fog that severly limits vision swallows the town','creepy',6),(9,'static sounds emenate from all electrical sockets','all sources of electricity emanate a strange, clicking and buzzing static sound for no discernible reason','weird',7),(10,'A storm looms on the horizon','black clouds and lightening can be seen in the distance, heading towards town','ominous',8);
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-07-11 14:27:35
+-- Dump completed on 2017-08-02  9:26:11
