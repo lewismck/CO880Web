@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<!-- Presents a button to generate stories and an option to view params -->
+<head>
+	<meta charset="utf-8">
+	<link href="http://fonts.googleapis.com/css?family=Lato:100,300,400" rel="stylesheet" type="text/css">
+	<!-- bootstrap for styling -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+ <!-- Bootstrap and jquery js -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <!-- Project specific JS - Makes calls to different PHP scripts which in turn call functions in this file -->
+	<script src="../ajax/js/phpcalls.js"></script>
+	<script src="../charts/chart.js"></script>
+	<script src="js/feedback.js"></script>
+	<script src="../charts/storyCharts.js"></script>
+	<!-- Project specific styles -->
+	<link rel="stylesheet" href="../Styles/main.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Static Test CO880</title>
+	<script>
+		$(document).ready(function(){
+				setStory();
+				$("#definitions").hide();
+		});
+</script>
+</head>
+<body>
+	<!-- Title and menu buttons -->
+	<div class="col-md-12 text-center" id="titleBlock">
+		<h1>Testing static outlines...</h1>
+		<button type="button" class="btn btn-lg btn-default" data-toggle="modal" data-target="#aboutModal">Project Details</button>
+		<!-- <button type="button" class="btn btn-lg btn-default" data-toggle="modal" data-target="#aboutModal">About Computational Creativity</button>
+		<button type="button" class="btn btn-lg btn-default" data-toggle="modal" data-target="#aboutModal">About Creativity</button><br> -->
+	</div>
+
+	<!-- Introdction Row -->
+	<div class="row col-md-12">
+		<div id="introduction" class="col-md-8 col-md-offset-2">
+			<h1>About this Project</h1>
+			<p>The goal of this project is to generate short stories or vignettes, with a dark and dreamlike theme. Inspired by authors and creators like Lynch, D.F.W. and Murakami. The aim is to have a loose and dreamlike structure to the stories, they are generated with no end state, but a relaxed set of rules ranging from Markov chains, naive character motivations, knowledge of previous stories and randomness. </p>
+			<p>The hope is to replicate some of the style of magic realist authors and autuers, who demonstrate a high level of creativity. At present the vignettes are generated using characters and events from Twin Peaks and Welcome to Nightvale (as they had wikipedia lists of episodes I could programmatically turn into story elements.) but the knowledge base of story components could be expanded in the future.</p>
+	  </div>
+	</div>
+	<br>
+	<!-- Story Row -->
+	<div class="row col-md-12">
+		<div class="col-md-8 col-md-offset-2">
+			<div id="storyTitle"></div>
+			<br>
+			<div id="story">
+
+			</div>
+			<br>
+			<div id="feedbackForm" class="text-center">
+				<strong><p>To what extent do you think the short story outline above demonstrates creativity?</p></strong>
+				<a onclick="showHideDefinitions();"><p>Click here to show/hide two definitions of creativity that can guide your answer:</p></a>
+				<div id="definitions">
+					<blockquote>
+						<p>The ability to produce original and unusual ideas, or to make something new or imaginative</p>
+						<footer><cite><a href="http://dictionary.cambridge.org/dictionary/english/creativity">Cambridge Dictionary</a></cite></footer>
+					</blockquote>
+					<br>
+					<blockquote>
+						<p>The ability to transcend traditional ideas, rules, patterns, relationships, or the like, and to create meaningful new ideas, forms, methods, interpretations, etc.; originality, progressiveness, or imagination.</p>
+						<footer><cite><a href="http://www.dictionary.com/browse/creativity">Dictionary.com</a></cite></footer>
+					</blockquote>
+				</div>
+				<button onclick="nextStory();" href="#story" class="btn btn-default">Next</button>
+			</div>
+		</div>
+	</div>
+	<br>
+	<br>
+	<br>
+
+
+
+	<!-- Modals -->
+	<!-- Params -->
+	<div id="aboutModal" class="modal fade" role="dialog">
+	  <div class="modal-dialog modal-lg">
+	    <!-- content -->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">About</h4>
+	      </div>
+	      <div class="modal-body">
+	        <p>The goal of this project is to generate short stories or vignettes, with a dark and dreamlike theme. Inspired by authors and creators like Lynch, D.F.W. and Murakami. The aim is to have a loose and dreamlike structure to the stories, they are generated with no end state, but a relaxed set of rules ranging from Markov chains, naive character motivations, knowledge of previous stories and randomness. </p>
+					<p>The hope is to replicate some of the style of magic realist authors and autuers, who demonstrate a high level of creativity. At present the vignettes are generated using characters and events from Twin Peaks and Welcome to Nightvale (as they had wikipedia lists of episodes I could programmatically turn into story elements.) but the knowledge base of story components could be expanded in the future.</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	</body>
+</html>

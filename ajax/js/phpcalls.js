@@ -54,11 +54,11 @@ function getStory() {
   var loc_choice = $("input:radio[name ='location_choice']:checked").val();
   //var cm = $("#cm").val();
   //var no_dop = $("#no_dop").val();
-  if($("#no_dop").is(":checked")){
-    var no_dop = 1;
+  if($("#allow_dop").is(":checked")){
+    var allow_dop = 1;
   }
   else{
-    var no_dop = 0;
+    var allow_dop = 0;
   }
   //var rd = $("#rd").val();
   if($("#rd").is(":checked")){
@@ -99,23 +99,24 @@ function getStory() {
   //var charcount = $("#charcount").val();
     $.ajax({
       type: "GET",
-      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&cycle_count="+cycle_count+"&no_dop="+no_dop+"&rd="+rd+"&loc_seq="+loc_seq+"&action_choice="+ac_choice+"&ac_seq="+ac_seq+"&event_choice="+ev_choice+"&location_choice="+loc_choice,
+      url: "ajax/php/main.php?func=getStory&ev_seq="+ev_seq+"&cycle_count="+cycle_count+"&no_dop="+allow_dop+"&rd="+rd+"&loc_seq="+loc_seq+"&action_choice="+ac_choice+"&ac_seq="+ac_seq+"&event_choice="+ev_choice+"&location_choice="+loc_choice,
       dataType: "html",
       success: function(response){
             $("#storyBox").html(response); //Put all the response data into storyBox (viewable in the params modal)
-            printOutline2(); //Print the outline
+            printOutline2(rd); //Print the outline
             $('[data-toggle="tooltip"]').tooltip(); //Enable tool tips
             showEvaluateStory(); //Show the evaluation buttons
       }
     });
 }
 
-
-/*
- * Print an outline of the story to the #outlineBox
- */
-function printOutline2(){
-  var rd = $("#rd").val();
+/**
+ * @param the respect death value (1 or 0)
+ * @return clear the #outlineBox and print a new outline into it
+ * TODO consider refactoring the char1Info, actionInfo type sequences into their own functions to get that data
+ * then have different ways of generating an outline using those parts (e.g. not sequential event, location, action but mix them up)
+ **/
+function printOutline2(rd){
   var shortestCycle = '';
   var shortestCycleCount = Math.min(locArray.length, actionArray.length, eventArray.length);
   if (shortestCycleCount = locArray.length){
@@ -131,20 +132,17 @@ function printOutline2(){
   $("#outlineBox").html(''); //clear the outline box
 
   for(i = 0; i <= shortestCycleCount-1; i++){
-    //Split the characters emotional states up into an array to display alongside each action
-    var c1_es_array = char1.arc_desc.split(",");
-    var c2_es_array = char2.arc_desc.split(",");
     //Assign some character variables for showing their data
-    var char1Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='Name: "+char1.firstname + " " + char1.lastname + " Description: "+char1.temperment+" Current Mood: "+c1_es_array[i+1]+"'>"+char1.firstname+"</a>";
-    var char2Info = "<a href='#' data-toggle='tooltip' data-placement='top' title='Name: "+char2.firstname + " " +char2.lastname+ " Description: "+char2.temperment+" Current Mood: "+c2_es_array[i+1]+"'>"+char2.firstname+"</a>";
+    var char1Info = getPrintableCharacter(char1, i);
+    var char2Info = getPrintableCharacter(char2, i);
     //Assign action and consequence variables
-    var actionInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].longDesc+"'>"+actionArray[i].brief+"</a>";
-    var acConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[i].con_desc+"'>"+actionArray[i].conBrief+"</a>";
+    var actionInfo = getPrintableAction(actionArray, i);
+    var acConseqenceInfo = getPrintableAcCon(actionArray, i);
     //Assign event and consequence variables
-    var eventInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].longDesc+"'>"+eventArray[i].brief+"</a>";
-    var evConseqenceInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[i].con_desc+"'>"+eventArray[i].conBrief+"</a>";
+    var eventInfo = getPrintableEvent(eventArray, i);
+    var evConseqenceInfo = getPrintableEvCon(eventArray, i);
     //Locations
-    locationInfo = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+locArray[i].brief+"'>"+locArray[i].name+"</a>";
+    locationInfo = getPrintableLocation(locArray, i);
 
     //Outline solo action
     if(actionArray[i].solo_action == 1){
@@ -158,6 +156,21 @@ function printOutline2(){
       + " Meanwhile " + protagonist+ " "+actionInfo
       + ".<br>"+protagonist+" "+acConseqenceInfo
       + ". As " + evConseqenceInfo + ".<br><br>";
+
+      if(i == 0){
+        evOutline = eventInfo +" at " + locationInfo + ". ";
+        acOutline = " Meanwhile " + protagonist+ " "+actionInfo + ".<br>"+protagonist+" "+acConseqenceInfo+". ";
+        evConOutline = ". As " + evConseqenceInfo + ". ";
+      }
+      // else if (i % 2 == 0) {
+      //   //concat them all together every two events...
+      //   bigOutline += evOutline + " " + acOutline + " <br>" + evConOutline;
+      // }
+      else{
+        evOutline += " and " + eventInfo +" at " + locationInfo + ".<br>";
+        acOutline +=  + protagonist+ " "+actionInfo + ".<br>"+protagonist+" "+acConseqenceInfo+". ";
+        evConOutline += ". While " + evConseqenceInfo + ". ";
+      }
     }
     //Outline invert_c1_c2 flag (for consequence)
     else if(actionArray[i].invert_c1_c2 == 1){
@@ -165,6 +178,17 @@ function printOutline2(){
       + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
       +".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info
       + ". As " + evConseqenceInfo + ".<br><br>";
+
+      if(i == 0){
+        evOutline = eventInfo +" at " + locationInfo + ". ";
+        acOutline = " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info + ".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info+". ";
+        evConOutline = ". As " + evConseqenceInfo + " ";
+      }
+      else{
+        evOutline += eventInfo +" at " + locationInfo + ". ";
+        acOutline += " Then " + char1Info+ " "+actionInfo+" "+char2Info + ".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info+". ";
+        evConOutline += " and " + evConseqenceInfo + " ";
+      }
     }
     //Outline normal
     else{
@@ -172,6 +196,17 @@ function printOutline2(){
       + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
       +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
       + ". As " + evConseqenceInfo + ".<br><br>";
+
+      if(i == 0){
+        evOutline = eventInfo +" at " + locationInfo + ". ";
+        acOutline = " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info+".<br> And "+acConseqenceInfo+" "+char2Info+". ";
+        evConOutline = ". As " + evConseqenceInfo + ". ";
+      }
+      else{
+        evOutline += eventInfo +" at " + locationInfo + ". ";
+        acOutline += " Then " + char1Info+ " "+actionInfo+" "+char2Info+".<br> And "+acConseqenceInfo+" "+char2Info+". ";
+        evConOutline += " and " + evConseqenceInfo + " ";
+      }
     }
 
     //Print the data linked together in order
@@ -182,8 +217,72 @@ function printOutline2(){
       break;
     }
   }
+
+  $("#outlineBox").append("<br><h1>Outline Action focus...:</h1>"+evOutline+acOutline+"<br>"+evConOutline+".<br>");
   //if the shortestCycleCount is less than the longest then run the other attributes calling their printXcycle functions and providing an offset
 
+}
+
+/**
+ * @param a character object that will be used to fill in the html that's returned
+ * @param an offset in the arc_es array to get the character's emotional state from
+ * @return a string of html that can be used to print the character name with some details provided on mouseover.
+ **/
+function getPrintableCharacter(character, arc_offset){
+  //Split the characters emotional states up into an array to display alongside each action
+  var c1_es_array = character.arc_desc.split(",");
+  var charData = "<a href='#' data-toggle='tooltip' data-placement='top' title='Name: "+character.firstname + " " + character.lastname + " Description: "+character.temperment+" Current Mood: "+c1_es_array[arc_offset+1]+"'>"+character.firstname+"</a>";
+
+  return charData;
+}
+
+/**
+ * @param an array of actions to pick from
+ * @param an offset in the action array to turn into a formatted string
+ * @return a string of html that can be used to print the action info
+ **/
+function getPrintableAction(actionArray, ac_offset){
+  var actionData = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[ac_offset].longDesc+"'>"+actionArray[ac_offset].brief+"</a>";
+  return actionData;
+}
+/**
+ * @param an array of actions to pick from
+ * @param an offset in the action array to turn into a formatted string
+ * @return a string of html that can be used to print the action info
+ **/
+function getPrintableAcCon(actionArray, ac_offset){
+  var acConData = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+actionArray[ac_offset].con_desc+"'>"+actionArray[ac_offset].conBrief+"</a>";
+  return acConData;
+}
+
+/**
+ * @param an array of events to pick from
+ * @param an offset in the event array to turn into a formatted string
+ * @return a string of html that can be used to print the event info
+ **/
+function getPrintableEvent(eventArray, ev_offset){
+  var eventData = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[ev_offset].longDesc+"'>"+eventArray[ev_offset].brief+"</a>";
+  return eventData;
+}
+
+/**
+ * @param an array of events to pick from
+ * @param an offset in the event array to turn into a formatted string
+ * @return a string of html that can be used to print the event info
+ **/
+function getPrintableEvCon(eventArray, ev_offset){
+  var evConData = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+eventArray[ev_offset].con_desc+"'>"+eventArray[ev_offset].conBrief+"</a>";
+  return evConData;
+}
+
+/**
+ * @param an array of locations to pick from
+ * @param an offset in the location array to turn into a formatted string
+ * @return a string of html that can be used to print the location info
+ **/
+function getPrintableLocation(locArray, loc_offset){
+  var locationData = "<a href='#' data-toggle='tooltip' data-placement='top' title='"+locArray[loc_offset].brief+"'>"+locArray[loc_offset].name+"</a>";
+  return locationData;
 }
 
 /*
@@ -225,31 +324,33 @@ function disableSeed(){
 
   /*Action Choice*/
   if(ac_choice == 'markov'){
-    $("#ac_seed").prop('disabled', false);;
+    $("#ac_seed").prop('disabled', false);
   }
   else{
-    $("#ac_seed").prop('disabled', true);;
+    $("#ac_seed").prop('disabled', true);
   }
 
   /*event Choice*/
   if(ev_choice == 'markov'){
-    $("#ev_seed").prop('disabled', false);;
+    $("#ev_seed").prop('disabled', false);
   }
   else{
-    $("#ev_seed").prop('disabled', true);;
+    $("#ev_seed").prop('disabled', true);
   }
 
   /*Location Choice*/
   if(loc_choice == 'markov'){
-    $("#loc_seed").prop('disabled', false);;
+    $("#loc_seed").prop('disabled', false);
   }
   else{
-    $("#loc_seed").prop('disabled', true);;
+    $("#loc_seed").prop('disabled', true);
   }
 
 }
 
 /**
+  * The n-gram and  Markov code is heavily based on this work: https://github.com/shiffman/A2Z-F16/blob/gh-pages/week7-markov/01_markov_bychar_short/markov.js
+  * which was in turn based off of Allison Parrish's RWET examples, in Python: https://github.com/aparrish/rwet-examples
   * exists in the KB and can be used for processing
   * MARKOV and N-Gram code
   * Function to make N-Grams of a string returns arrays

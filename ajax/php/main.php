@@ -189,7 +189,7 @@ if($params->func == 'setup'){
         <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
         <label>Allow Doppelgangers: </label><br>
         <label class=\"switch\">
-	  	    <input type=\"checkbox\" id=\"no_dop\">
+	  	    <input type=\"checkbox\" id=\"allow_dop\">
   	      <span class=\"slider round\"></span>
         </label>
       	<br>
@@ -235,10 +235,10 @@ elseif ($params->func == 'getStory') {
   $char1 = $sm->makeCharacter();
   //check if allow doppelgangers is set
   if($params->allow_doppelgangers == 1){
-    $char2 = $sm->getCharacterWhoIsnt($char1->id);
+    $char2 = $sm->makeCharacter();
   }
   else{
-    $char2 = $sm->makeCharacter();
+    $char2 = $sm->getCharacterWhoIsnt($char1->id);
   }
   //Display some Character Details
   echo "<h3>Characters</h3>".$char1->describe()."<br>".$char2->describe()."<br>";
