@@ -6,17 +6,20 @@ body{
 	font: 300 16px/22px "lato", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; /*Use Google lato font*/
 }
 
-/*#story{
-  padding-left: 5%;
-  font-family: 'Lora', serif;
-  border-top: 1px solid grey;
+#story{
+  /*padding-left: 5%;*/
+  /*font-family: 'Lora', serif;*/
+  border-bottom: 1px solid grey;
 }
 
-/*#introduction{
-  padding-left: 5%;
+#introduction{
+  /*padding-left: 5%;*/
   border-bottom: 1px solid #ccc;
-}*/
+}
 
+#feedbackForm{
+  padding-bottom: 5%;
+}
 /*Set the font weight and put a border on the heading*/
 h1 {
   padding-bottom: 10px;
@@ -24,9 +27,16 @@ h1 {
   font-weight: 200;
   text-align: center;
 }
+/*a {
+	color: black;
+	text-decoration: underline dotted blue !important;
+  /*text-decoration-style: wavy;*/
+  /*text-decoration-color: blue !important;*/
+/*}*/
 /*----------------------------------------------------
-  Fancy checkboxes thanks to W3C:
+  Fancy checkboxes and loading spinners thanks to W3C:
   https://www.w3schools.com/howto/howto_css_switch.asp
+	https://www.w3schools.com/howto/howto_css_loader.asp
  -----------------------------------------------------*/
  /* The switch - the box around the slider */
  .switch {
@@ -86,3 +96,21 @@ h1 {
  .slider.round:before {
    border-radius: 50%;
  }
+
+ /*----------------------------------------------------
+   Loader CSS thanks to W3C:
+   https://www.w3schools.com/howto/howto_css_loader.asp
+  -----------------------------------------------------*/
+ .loader {
+    border: 16px solid #f3f3f3; /* Light grey */
+    border-top: 16px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

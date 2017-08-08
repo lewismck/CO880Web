@@ -51,7 +51,7 @@
 					<option value="0">False</option>
 					</select><br> -->
 				</div>
-				<!-- </br> -->
+
 				<div>
 					<input type="submit" value="Generate" class="btn btn-primary"></br></br>
 				</div>

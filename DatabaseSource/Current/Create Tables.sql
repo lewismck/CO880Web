@@ -114,6 +114,19 @@
 )
 
 /*-------------------
+  User Feedback
+ -------------------*/
+ CREATE TABLE user_feedback (
+   id int(11) NOT NULL AUTO_INCREMENT,
+   story_id int(11) NOT NULL,
+   dataset varchar(50) NOT NULL,
+   creativity_rating int(11) NOT NULL,
+   liked varchar(5),
+   timeRated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (id)
+ );
+
+/*-------------------
   Story Character
  -------------------*/
  CREATE TABLE `s_character` (

@@ -12,8 +12,6 @@
  *
  */
 function mainSetup() {
-  //var func = $("#functionCall").val();
-  //$("#storyBox").html("<h3><strong>Testing...</strong></h3>");
     $.ajax({
       type: "GET",
       url: "ajax/php/main.php?func=setup",
@@ -52,15 +50,12 @@ function getStory() {
   var ac_choice = $("input:radio[name ='action_choice']:checked").val();
   var ev_choice = $("input:radio[name ='event_choice']:checked").val();
   var loc_choice = $("input:radio[name ='location_choice']:checked").val();
-  //var cm = $("#cm").val();
-  //var no_dop = $("#no_dop").val();
   if($("#allow_dop").is(":checked")){
     var allow_dop = 1;
   }
   else{
     var allow_dop = 0;
   }
-  //var rd = $("#rd").val();
   if($("#rd").is(":checked")){
     var rd = 1;
   }
@@ -86,7 +81,6 @@ function getStory() {
   else{
     loc_seq = '';
   }
-
   /*Action*/
   if(ac_choice == 'markov'){
     var ac_seed = $("#ac_seed").val();
@@ -113,8 +107,6 @@ function getStory() {
 /**
  * @param the respect death value (1 or 0)
  * @return clear the #outlineBox and print a new outline into it
- * TODO consider refactoring the char1Info, actionInfo type sequences into their own functions to get that data
- * then have different ways of generating an outline using those parts (e.g. not sequential event, location, action but mix them up)
  **/
 function printOutline2(rd){
   var shortestCycle = '';
@@ -144,6 +136,14 @@ function printOutline2(rd){
     //Locations
     locationInfo = getPrintableLocation(locArray, i);
 
+    /*Generate a random number for picking outline styles
+      Concerns between fabula and discourse are listed
+      in logbook and dissertation outline docs, I want
+      the variety afforded here but to separate the
+      presentation from the sequence */
+    var outlineSeed = Math.round(Math.random()*10, 0);
+    console.log(outlineSeed);
+
     //Outline solo action
     if(actionArray[i].solo_action == 1){
       if(actionArray[i].protagonist == 'c1'){
@@ -152,60 +152,66 @@ function printOutline2(rd){
       else{
         protagonist = char2Info;
       }
-      outline = eventInfo +" at " + locationInfo
-      + " Meanwhile " + protagonist+ " "+actionInfo
-      + ".<br>"+protagonist+" "+acConseqenceInfo
-      + ". As " + evConseqenceInfo + ".<br><br>";
-
-      if(i == 0){
-        evOutline = eventInfo +" at " + locationInfo + ". ";
-        acOutline = " Meanwhile " + protagonist+ " "+actionInfo + ".<br>"+protagonist+" "+acConseqenceInfo+". ";
-        evConOutline = ". As " + evConseqenceInfo + ". ";
+      if(outlineSeed <= 3){
+        outline = eventInfo +" at " + locationInfo
+        + " Meanwhile " + protagonist+ " "+actionInfo
+        + ".<br>"+protagonist+" "+acConseqenceInfo
+        + ". As " + evConseqenceInfo + ".<br><br>";
       }
-      // else if (i % 2 == 0) {
-      //   //concat them all together every two events...
-      //   bigOutline += evOutline + " " + acOutline + " <br>" + evConOutline;
-      // }
+      else if(outlineSeed > 3 && outlineSeed <= 6 ){
+        outline =  protagonist+ " " +actionInfo
+        + ".<br>"+protagonist+" "+acConseqenceInfo
+        + ".<br>While " + eventInfo +" at " + locationInfo
+        + ". And " + evConseqenceInfo + ".<br><br>";
+      }
       else{
-        evOutline += " and " + eventInfo +" at " + locationInfo + ".<br>";
-        acOutline +=  + protagonist+ " "+actionInfo + ".<br>"+protagonist+" "+acConseqenceInfo+". ";
-        evConOutline += ". While " + evConseqenceInfo + ". ";
+        //outline3
+        outline =  protagonist+ " " +actionInfo
+        + ".<br>Meanwhile at " +locationInfo +" " + eventInfo
+        + ".<br>"+protagonist+" "+acConseqenceInfo
+        + ", and " + evConseqenceInfo + ".<br><br>";
       }
     }
     //Outline invert_c1_c2 flag (for consequence)
     else if(actionArray[i].invert_c1_c2 == 1){
-      outline = eventInfo +" at " + locationInfo
-      + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
-      +".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info
-      + ". As " + evConseqenceInfo + ".<br><br>";
-
-      if(i == 0){
-        evOutline = eventInfo +" at " + locationInfo + ". ";
-        acOutline = " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info + ".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info+". ";
-        evConOutline = ". As " + evConseqenceInfo + " ";
+      if(outlineSeed <= 3){
+        outline = eventInfo +" at " + locationInfo
+        + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
+        +".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info
+        + ". As " + evConseqenceInfo + ".<br><br>";
+      }
+      else if((outlineSeed > 3) && (outlineSeed <= 6)){
+        outline = char1Info+ " "+actionInfo+" "+char2Info
+        + ".<br>Whilst at " +locationInfo+" "+ eventInfo
+        +".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info
+        + ", as " + evConseqenceInfo + ".<br><br>";
       }
       else{
-        evOutline += eventInfo +" at " + locationInfo + ". ";
-        acOutline += " Then " + char1Info+ " "+actionInfo+" "+char2Info + ".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info+". ";
-        evConOutline += " and " + evConseqenceInfo + " ";
+        outline = char1Info+ " "+actionInfo+" "+char2Info
+        +".<br>"+char2Info+" "+acConseqenceInfo+" "+char1Info
+        + ".<br>Meanwhile " + eventInfo +" at " + locationInfo
+        + " and " + evConseqenceInfo + ".<br><br>";
       }
     }
     //Outline normal
     else{
-      outline = eventInfo +" at " + locationInfo
-      + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
-      +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
-      + ". As " + evConseqenceInfo + ".<br><br>";
-
-      if(i == 0){
-        evOutline = eventInfo +" at " + locationInfo + ". ";
-        acOutline = " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info+".<br> And "+acConseqenceInfo+" "+char2Info+". ";
-        evConOutline = ". As " + evConseqenceInfo + ". ";
+      if(outlineSeed <= 3){
+        outline = eventInfo +" at " + locationInfo
+        + " Meanwhile " + char1Info+ " "+actionInfo+" "+char2Info
+        +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
+        + ". As " + evConseqenceInfo + ".<br><br>";
+      }
+      else if((outlineSeed > 3) && (outlineSeed <= 6)){
+        outline = char1Info+ " "+actionInfo+" "+char2Info
+        +".<br>And "+acConseqenceInfo+" "+char2Info
+        + ".<br>As " + eventInfo +" at " + locationInfo
+        + " and " + evConseqenceInfo + ".<br><br>";
       }
       else{
-        evOutline += eventInfo +" at " + locationInfo + ". ";
-        acOutline += " Then " + char1Info+ " "+actionInfo+" "+char2Info+".<br> And "+acConseqenceInfo+" "+char2Info+". ";
-        evConOutline += " and " + evConseqenceInfo + " ";
+        outline = char1Info+ " "+actionInfo+" "+char2Info
+        + ".<br>While " + eventInfo +" at " + locationInfo
+        +".<br>"+char1Info+" "+acConseqenceInfo+" "+char2Info
+        + ", as " + evConseqenceInfo + ".<br><br>";
       }
     }
 
@@ -218,7 +224,6 @@ function printOutline2(rd){
     }
   }
 
-  $("#outlineBox").append("<br><h1>Outline Action focus...:</h1>"+evOutline+acOutline+"<br>"+evConOutline+".<br>");
   //if the shortestCycleCount is less than the longest then run the other attributes calling their printXcycle functions and providing an offset
 
 }
@@ -294,7 +299,7 @@ function showEvaluateStory(){
 
 /**
  * @param a single letter g/b rating of the story
- * @param a humanr readable representation of the rating
+ * @param a human readable representation of the rating
  * Calls the evaluateStory block of main.php passing the rating
  * returns the response from the server to the #evaluateBox
  **/
@@ -349,9 +354,8 @@ function disableSeed(){
 }
 
 /**
-  * The n-gram and  Markov code is heavily based on this work: https://github.com/shiffman/A2Z-F16/blob/gh-pages/week7-markov/01_markov_bychar_short/markov.js
+  * The n-gram and Markov code is heavily based on this work: https://github.com/shiffman/A2Z-F16/blob/gh-pages/week7-markov/01_markov_bychar_short/markov.js
   * which was in turn based off of Allison Parrish's RWET examples, in Python: https://github.com/aparrish/rwet-examples
-  * exists in the KB and can be used for processing
   * MARKOV and N-Gram code
   * Function to make N-Grams of a string returns arrays
   * Function to generate an n length sequence given a set of N-Grams
@@ -372,16 +376,17 @@ function disableSeed(){
 
 /**
   * @param the source string to turn into n-grams
-  * @param the n gram size as an int
+  * @param the n gram size
   * @return the object containing the n-grams
   * Turns a string into an array containing n-grams of size n
+  * The 'grams' are equal to n to enable a selection of sensible storyComponent keys when calling markovIt()
+  * (a genuine n-gram generator function is makeNgrams in the deprecated functions)
  **/
 function makeNgrams2(src, n){
  var ngrams = {};
 
  for (var i = 0; i <= src.length-n; i++){
    var gram = src.substring(i, i+n);
-   //var gram = gramWithComma.replace(/,/g, ' ');
 
    if(!ngrams[gram]){
      ngrams[gram] = [];
@@ -396,8 +401,8 @@ function makeNgrams2(src, n){
   * @param the seed gram to use
   * @param the n-grams object
   * @param the order to use when selecting n-grams
-  * @param the lenght of the returned string
-  * @return the array containing the n-grams
+  * @param the length of the returned string
+  * @return the string containing the n-grams
   * Turns a string into an array containing n-grams of size n
  **/
 function markovIt(seed, ngrams, n, limit){
@@ -407,7 +412,6 @@ function markovIt(seed, ngrams, n, limit){
  //Include check for when exceeding length of txt
  for(var i = 0; i < limit; i++){
    var possibilities = ngrams[currentGram];
-   //console.log(possibilities);
    var next = possibilities[Math.floor(Math.random() * possibilities.length)];
    result += next;
    var len = result.length;
