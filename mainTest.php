@@ -28,6 +28,27 @@
 					<!--  Params returned here by mainSetup() -->
 				</div>
 				<div id="storyParams">
+					<label>Action Choice: </label><br>
+	        <input type="radio" name="action_choice" value="cm" onchange="disableSeed()" checked> Character Motivation<br>
+	        <input type="radio" name="action_choice" value="markov" onchange="disableSeed()" > Markov Chain<br>
+	        <input type="radio" name="action_choice" value="random" onchange="disableSeed()"> Random<br>
+	        <label>Event Choice: </label><br>
+	        <input type="radio" name="event_choice" value="markov" onchange="disableSeed()" checked> Markov Chain<br>
+	        <input type="radio" name="event_choice" value="random" onchange="disableSeed()"> Random<br>
+	        <label>Location Choice: </label><br>
+	        <input type="radio" name="location_choice" value="markov" onchange="disableSeed()" checked> Markov Chain<br>
+	        <input type="radio" name="location_choice" value="random" onchange="disableSeed()"> Random<br>
+	        <label>Allow Doppelgangers: </label><br>
+	        <label class="switch">
+		  	    <input type="checkbox" id="allow_dop">
+	  	      <span class="slider round"></span>
+	        </label>
+	      	<br>
+	      	<label>Respect Death: </label><br>
+	        <label class="switch">
+		  	    <input type="checkbox" id="rd">
+	  	      <span class="slider round"></span>
+	        </label><br>
 					<!-- <div class="row">
 						<label>Action Choice: </label><br>
 						<input type="radio" name="action_choice" value="cm" onchange="disableSeed()" checked> Character Motivation<br>
@@ -69,6 +90,14 @@
 			<!-- View the passed parameters and returned data  -->
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#chartsModal">View Charts</button><br><br>
+			<select id="dataSet">
+				<option value="unconstrained">unconstrained</option>
+				<option value="moderatelyConstrained1" selected>moderatelyConstrained1</option>
+				<option value="moderatelyConstrained2">moderatelyConstrained2</option>
+				<option value="moderatelyConstrained3">moderatelyConstrained3</option>
+				<option value="tightlyConstrained">tightlyConstrained</option>
+			</select>
+			<button type="button" class="btn btn-default" onclick="logGeneratedStories();">Log Stories</button><br><br>
 		</div>
 	</div>
 

@@ -7,6 +7,8 @@
   containing extra information
 -----------------------------------------------------------------------------*/
 
+var storyList = [];
+var story_id_list = [];
 /*
  * Call the setup section in main.php to get the KB data returned as variables
  *
@@ -18,7 +20,7 @@ function mainSetup() {
       dataType: "html",
       success: function(response){
             $("#dynamicStoryParams").html(response);
-            generateCharts();
+            // generateCharts(); Soon to be moved to new module
       }
     });
 }
@@ -100,6 +102,7 @@ function getStory() {
             printOutline2(rd); //Print the outline
             $('[data-toggle="tooltip"]').tooltip(); //Enable tool tips
             showEvaluateStory(); //Show the evaluation buttons
+            mainSetup();//Reset the random seeds and the KB data.
       }
     });
 }
@@ -109,6 +112,7 @@ function getStory() {
  * @return clear the #outlineBox and print a new outline into it
  **/
 function printOutline2(rd){
+  var masterOutline = '';
   var shortestCycle = '';
   var shortestCycleCount = Math.min(locArray.length, actionArray.length, eventArray.length);
   if (shortestCycleCount = locArray.length){
@@ -217,13 +221,14 @@ function printOutline2(rd){
 
     //Print the data linked together in order
     $("#outlineBox").append(outline);
+    masterOutline += outline
 
     //If a character has died and respect death is on stop
     if((actionArray[i].is_dead != 'x') && rd == '1'){
       break;
     }
   }
-
+  storyList.push(masterOutline);
   //if the shortestCycleCount is less than the longest then run the other attributes calling their printXcycle functions and providing an offset
 
 }
@@ -236,7 +241,7 @@ function printOutline2(rd){
 function getPrintableCharacter(character, arc_offset){
   //Split the characters emotional states up into an array to display alongside each action
   var c1_es_array = character.arc_desc.split(",");
-  var charData = "<a href='#' data-toggle='tooltip' data-placement='top' title='Name: "+character.firstname + " " + character.lastname + " Description: "+character.temperment+" Current Mood: "+c1_es_array[arc_offset+1]+"'>"+character.firstname+"</a>";
+  var charData = "<a href='#' class='story-comp' data-toggle='tooltip' data-placement='top' title='Name: "+ character.firstname + " " + character.lastname + " Age: " + character.age + " Gender: " + character.gender + " Description: "+character.temperment+" Current Mood: "+c1_es_array[arc_offset+1]+"'>"+character.firstname+"</a>";
 
   return charData;
 }
@@ -319,6 +324,22 @@ function evaluateStory2(rating, rating_hr){
   });
 }
 
+/**
+ * Used for quickly getting the raw html for displaying the stories
+ * story_id_list comes from a hacky workaround that's updated in main.php whenever the story is rated.
+ * This guarantees an ID will be returned, however it means the stories must be rated to be kept in sync with the IDs
+ * which is non optimal
+ **/
+function logGeneratedStories(){
+  var dataSet = $("#dataSet").val();
+  storyArrayFriendly = '';
+
+  for(var i = 0; i < storyList.length; i++){
+    storyArrayFriendly += ",\""+storyList[i]+"<span hidden='true' id='storyID'>"+story_id_list[i]+"</span><span hidden='true' id='dataset'>"+dataSet+"</span>\"\n";
+  }
+
+  console.log(storyArrayFriendly);
+}
 /*
  * Checks the parameters and disables the appropriate seed selectors if they are not using Markov chains
  */
@@ -373,7 +394,21 @@ function disableSeed(){
    console.log(ngrams);
    return ngrams;
  }
+ /**
+   * @param the source string to turn into an array and pick randomly from
+   * @param the n gram size
+   * @return the random seed
+  **/
+ function pickRandomSeedFromKB(src, n){
+   var seeds = [];
 
+   for (var i = 0; i <= src.length-n; i++){
+     var gram = src.substring(i, i+n);
+     seeds.push(src.charAt(i+n));
+   }
+   console.log(ngrams);
+   return ngrams;
+ }
 /**
   * @param the source string to turn into n-grams
   * @param the n gram size

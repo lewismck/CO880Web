@@ -105,9 +105,14 @@ if($params->func == 'setup'){
        Cycle Count
   --------------------*/
   echo "<label>Cycle Count: </label><select id=\"cycle_count\">
-          <option value=\"1\" selected>1</option>";
+          <option value=\"1\" >1</option>";
   for ($i = 2; $i <= 10; $i++) {
-    echo "<option value='".$i."'>".$i."</option>";
+    if($i == 3){
+        echo "<option value='".$i."' selected>".$i."</option>";
+    }
+    else{
+      echo "<option value='".$i."'>".$i."</option>";
+    }
   }
   echo "</select><br>";
   /*-------------------
@@ -174,30 +179,30 @@ if($params->func == 'setup'){
     }
     echo "</select><br>";
   }
-  /*-------------------
-      Static params
-  --------------------*/
-  echo "<label>Action Choice: </label><br>
-        <input type=\"radio\" name=\"action_choice\" value=\"cm\" onchange=\"disableSeed()\" checked> Character Motivation<br>
-        <input type=\"radio\" name=\"action_choice\" value=\"markov\" onchange=\"disableSeed()\" > Markov Chain<br>
-        <input type=\"radio\" name=\"action_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-        <label>Event Choice: </label><br>
-        <input type=\"radio\" name=\"event_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
-        <input type=\"radio\" name=\"event_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-        <label>Location Choice: </label><br>
-        <input type=\"radio\" name=\"location_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
-        <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-        <label>Allow Doppelgangers: </label><br>
-        <label class=\"switch\">
-	  	    <input type=\"checkbox\" id=\"allow_dop\">
-  	      <span class=\"slider round\"></span>
-        </label>
-      	<br>
-      	<label>Respect Death: </label><br>
-        <label class=\"switch\">
-	  	    <input type=\"checkbox\" id=\"rd\">
-  	      <span class=\"slider round\"></span>
-        </label><br>";
+  /*-----------------------------------------------
+      Static params (now just plain HTML in main)
+  ------------------------------------------------*/
+  // echo "<label>Action Choice: </label><br>
+  //       <input type=\"radio\" name=\"action_choice\" value=\"cm\" onchange=\"disableSeed()\" checked> Character Motivation<br>
+  //       <input type=\"radio\" name=\"action_choice\" value=\"markov\" onchange=\"disableSeed()\" > Markov Chain<br>
+  //       <input type=\"radio\" name=\"action_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+  //       <label>Event Choice: </label><br>
+  //       <input type=\"radio\" name=\"event_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
+  //       <input type=\"radio\" name=\"event_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+  //       <label>Location Choice: </label><br>
+  //       <input type=\"radio\" name=\"location_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
+  //       <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
+  //       <label>Allow Doppelgangers: </label><br>
+  //       <label class=\"switch\">
+	//   	    <input type=\"checkbox\" id=\"allow_dop\">
+  // 	      <span class=\"slider round\"></span>
+  //       </label>
+  //     	<br>
+  //     	<label>Respect Death: </label><br>
+  //       <label class=\"switch\">
+	//   	    <input type=\"checkbox\" id=\"rd\">
+  // 	      <span class=\"slider round\"></span>
+  //       </label><br>";
 
 }
 
@@ -442,18 +447,22 @@ elseif ($params->func == 'getStory') {
     $main->echoParams($params);
 }
 
-/*---------------------------
-  Save the story to the KB
- ---------------------------*/
+/*----------------------------------
+  Save the story rating to the KB
+ ----------------------------------*/
 elseif ($params->func == 'evaluateStory') {
   //Update the story's rating
   $result = $main->rateLatestStory($params->rating);
+  $latestID = $main->getLatestStoryID();
   $main->echoParams($params); //Return the parsed params to the browser DOM
 
   //Check the result and return it with user facing feedback.
   if($result == true){
+    //also pushes the latest rating for getting the data into the story log, for evaluation of the stories by users.
+    //Must be kept in sync with the generate button presses.
     echo "<script>
             $('#evaluateBox').html('Story evaluated as ".$params->rating_hr.".');
+            story_id_list.push(".$latestID.");
           </script><br>Result: ".$result;
   }
   else{

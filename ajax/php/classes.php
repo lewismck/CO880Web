@@ -158,13 +158,24 @@ class Main {
    * else false
    **/
   public function rateLatestStory($rating){
-    global $getLatestStoryIDQuery, $updateStoryRating;
-    $latest_id_request = executeQuery($getLatestStoryIDQuery);
-    $latest_id = $latest_id_request[0]['story_id'];
+    global $updateStoryRating;
+    // $latest_id_request = executeQuery($getLatestStoryIDQuery);
+    $latest_id = $this->getLatestStoryID();
 
     $updateStatement = $updateStoryRating." '".$rating."' WHERE es.story_id =".$latest_id;
     $result = executeInsert($updateStatement);
     return $result;
+  }
+
+  /**
+   * Query and return the latest story id
+   * @return the latest story's story_id
+   **/
+  public function getLatestStoryID(){
+    global $getLatestStoryIDQuery;
+    $latest_id_request = executeQuery($getLatestStoryIDQuery);
+    $latest_id = $latest_id_request[0]['story_id'];
+    return $latest_id;
   }
 }
 

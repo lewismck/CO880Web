@@ -27,12 +27,12 @@ h1 {
   font-weight: 200;
   text-align: center;
 }
-/*a {
+/*.story-comp{
 	color: black;
-	text-decoration: underline dotted blue !important;
-  /*text-decoration-style: wavy;*/
-  /*text-decoration-color: blue !important;*/
-/*}*/
+	text-decoration: underline wavy blue !important;
+	text-decoration-color: blue !important;
+}*/
+
 /*----------------------------------------------------
   Fancy checkboxes and loading spinners thanks to W3C:
   https://www.w3schools.com/howto/howto_css_switch.asp
