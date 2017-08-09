@@ -1,4 +1,7 @@
 <?php
+/**
+ * @author Lewis Mckeown
+ **/
 /*------------------------------------
   Main server side business logic kept
   here.
@@ -9,6 +12,7 @@
     setup
     getStory
     evaluateStory
+    getChartData
 
 -------------------------------------*/
 //Require the classes file
@@ -38,7 +42,7 @@ $rc = new ReflectionCycle($sm);
  ----------------------------------------------------------*/
 if($params->func == 'setup'){
   $kbData = $main->setup();
-  //TODO split the storyParams setup and the setup setup into 2 functions
+  //TODO split the storyParams setup and the setup setup into 2 functions?
 
   /*Get some story data and echo is to turn into charts*/
   $goodStoryData = $main->getStoryData('g');
@@ -470,6 +474,41 @@ elseif ($params->func == 'evaluateStory') {
             $('#evaluateBox').html('Something went wrong. Check Params?');
           </script><br>Result: ".$result;
   }
+}
+/*----------------------------------
+  Get the data for the charts
+ ----------------------------------*/
+elseif($params->func == 'getChartData'){
+  $kbData = $main->setup();
+
+  /*Get some story data and echo is to turn into charts*/
+  $goodStoryData = $main->getStoryData('g');
+  $passableGSD = json_encode($goodStoryData);
+  $badStoryData = $main->getStoryData('b');
+  $passableBSD = json_encode($badStoryData);
+  $passableSortedBadActions = json_encode($main->turnKBDataToArray($kbData->action_seq_b));
+  $passableSortedActions = json_encode($main->turnKBDataToArray($kbData->action_seq));
+  $passableSortedBadEvents = json_encode($main->turnKBDataToArray($kbData->event_seq_b));
+  $passableSortedEvents = json_encode($main->turnKBDataToArray($kbData->event_seq));
+  $passableSortedBadLocations = json_encode($main->turnKBDataToArray($kbData->location_seq_b));
+  $passableSortedLocations = json_encode($main->turnKBDataToArray($kbData->location_seq));
+  //Echo the data from the knowledge base that the n-gram and markov functions need
+  echo "<script>
+          var sortedBadActions = ".$passableSortedBadActions.";
+          var sortedActions = ".$passableSortedActions.";
+          var sortedBadEvents = ".$passableSortedBadEvents.";
+          var sortedEvents = ".$passableSortedEvents.";
+          var sortedBadLocations = ".$passableSortedBadLocations.";
+          var sortedLocations = ".$passableSortedLocations.";
+          var ac_labels = [];
+          var ac_values = [];
+          var ev_labels = [];
+          var ev_values = [];
+          var loc_labels = [];
+          var loc_values = [];
+          var gsd = ".$passableGSD.";
+          var bsd = ".$passableBSD.";
+        </script>";
 }
 else{
   //echo $params->func;

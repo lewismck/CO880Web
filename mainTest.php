@@ -16,12 +16,12 @@
 	<!-- Project specific styles -->
 	<link rel="stylesheet" href="Styles/main.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Main Test CO880</title>
+	<title>CO880 Generator</title>
 </head>
 <!-- onload function should be setup that calls the setup function in main.php -->
 <body onload="mainSetup();">
 	<div id="mainBody" class="col-md-12 text-center">
-		<h1>CO880 Main Test</h1>
+		<h1>CO880 Generator</h1>
 		<form action="javascript:getStory();">
 			<fieldset>
 			 	<div id="dynamicStoryParams" class="form-group">
@@ -49,28 +49,6 @@
 		  	    <input type="checkbox" id="rd">
 	  	      <span class="slider round"></span>
 	        </label><br>
-					<!-- <div class="row">
-						<label>Action Choice: </label><br>
-						<input type="radio" name="action_choice" value="cm" onchange="disableSeed()" checked> Character Motivation<br>
-						<input type="radio" name="action_choice" value="markov" onchange="disableSeed()" > Markov Chain<br>
-						<input type="radio" name="action_choice" value="random" onchange="disableSeed()"> Random<br>
-					</div>
-					<label>Event Choice: </label><br>
-					<input type="radio" name="event_choice" value="markov" onchange="disableSeed()" checked> Markov Chain<br>
-					<input type="radio" name="event_choice" value="random" onchange="disableSeed()"> Random<br>
-					<label>Location Choice: </label><br>
-					<input type="radio" name="location_choice" value="markov" onchange="disableSeed()" checked> Markov Chain<br>
-					<input type="radio" name="location_choice" value="random" onchange="disableSeed()"> Random<br>
-					<label>Allow Doppelgangers: </label>
-					<select name="no_dop"  id="no_dop">
-					<option value="1" selected>True</option>
-					<option value="0">False</option>
-					</select><br>
-					<label>Respect Death: </label>
-					<select name="respect_death"  id="rd">
-					<option value="1" selected>True</option>
-					<option value="0">False</option>
-					</select><br> -->
 				</div>
 
 				<div>
@@ -83,13 +61,10 @@
 		</blockquote>
 		</br>
 		<div id="evaluateBox" class=".col-md-8 .col-md-offset-4"></div></br>
-
-
-		<div id="footerBox">
-			</br>
-			<!-- View the passed parameters and returned data  -->
-			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
-			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#chartsModal">View Charts</button><br><br>
+	</div>
+	<div class="col-md-12 row">
+		<div class="col-md-8 col-md-offset-2 text-center">
+			<!-- Select a dataset and log the stories generated so far to the command line in a way that's usable as elements in a js array  -->
 			<select id="dataSet">
 				<option value="unconstrained">unconstrained</option>
 				<option value="moderatelyConstrained1" selected>moderatelyConstrained1</option>
@@ -98,6 +73,14 @@
 				<option value="tightlyConstrained">tightlyConstrained</option>
 			</select>
 			<button type="button" class="btn btn-default" onclick="logGeneratedStories();">Log Stories</button><br><br>
+		</div>
+	</div>
+	<div class="col-md-12 row">
+		<div class="col-md-8 col-md-offset-2 text-center" id="page-footer">
+			<!-- View the passed parameters and returned data  -->
+			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
+			<!-- Go to the stats module  -->
+			<a href="stats.html"><button type="button" class="btn btn-default" >View Stats</button></a><br><br>
 		</div>
 	</div>
 

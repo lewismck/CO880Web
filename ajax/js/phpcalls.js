@@ -9,10 +9,10 @@
 
 var storyList = [];
 var story_id_list = [];
-/*
+/**
  * Call the setup section in main.php to get the KB data returned as variables
  *
- */
+ **/
 function mainSetup() {
     $.ajax({
       type: "GET",
@@ -25,6 +25,21 @@ function mainSetup() {
     });
 }
 
+/**
+ * Call the getChartData section in main.php to get the KB data
+ * and ararys needed for the charts
+ **/
+function chartSetup() {
+    $.ajax({
+      type: "GET",
+      url: "ajax/php/main.php?func=getChartData",
+      dataType: "html",
+      success: function(response){
+            $("#chartData").html(response);
+            generateCharts();
+      }
+    });
+}
 
 /**
  * TODO Hardcoded value getting from inputs now - will make function accept parameters later

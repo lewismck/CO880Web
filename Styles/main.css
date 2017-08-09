@@ -1,3 +1,8 @@
+/**
+ * @author Lewis Mckeown
+ * This code will form part of the corpus for my MSc submission
+ * Following this it will probably be available on github.
+ **/
 
 /*----------------------------------------------------
   Quick Styling that Bootstrap doesn't take care of
@@ -7,19 +12,23 @@ body{
 }
 
 #story{
-  /*padding-left: 5%;*/
-  /*font-family: 'Lora', serif;*/
   border-bottom: 1px solid grey;
 }
 
 #introduction{
-  /*padding-left: 5%;*/
-  border-bottom: 1px solid #ccc;
+	border-bottom: 4px dashed #ccc;
+	padding-bottom: 2%;
+  /*border-bottom: 1px solid #ccc;*/
 }
 
 #feedbackForm{
-  padding-bottom: 5%;
+  padding-bottom: 6%;
 }
+#page-footer{
+	border-top: 4px dashed #ccc;
+	padding-top: 2%;
+}
+
 /*Set the font weight and put a border on the heading*/
 h1 {
   padding-bottom: 10px;
@@ -27,6 +36,12 @@ h1 {
   font-weight: 200;
   text-align: center;
 }
+
+/*h1 > .co880Title{
+	border-bottom: 4px dashed #ccc;
+	padding-bottom: 2%;
+}*/
+
 /*.story-comp{
 	color: black;
 	text-decoration: underline wavy blue !important;
