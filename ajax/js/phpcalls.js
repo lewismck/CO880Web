@@ -1,14 +1,22 @@
+/**
+ * @author Lewis Mckeown
+ **/
 /*-----------------------------------------------------------------------------
   Mostly AJAX functions which call main.php passing in a function to the
   func param, which requests a specific block of code their to be executed.
   Currently also contains some aesthetic/functional code to disable the
   seed selectors if Markov chains are not being used and to return the
   story and it's components in a human readable format with hint text
-  containing extra information
+  containing extra information, the code for generating Markov chains
+  and the code for running the chart data queries in main.php
 -----------------------------------------------------------------------------*/
-
+/**
+ * Some globally accessible variables that shouldn't change when
+ * mainSetup is called each story generation/page load
+ **/
 var storyList = [];
 var story_id_list = [];
+
 /**
  * Call the setup section in main.php to get the KB data returned as variables
  *
@@ -20,7 +28,6 @@ function mainSetup() {
       dataType: "html",
       success: function(response){
             $("#dynamicStoryParams").html(response);
-            // generateCharts(); Soon to be moved to new module
       }
     });
 }

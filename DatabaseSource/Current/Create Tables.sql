@@ -1,3 +1,12 @@
+/**
+ * @author Lewis Mckeown
+ **/
+ /*--------------------------------------------------------------
+    This document contains a list of SQL statements that can
+    be used to recreate the database for the software
+    (minus some foreign key links).
+  ---------------------------------------------------------------*/
+
 /*-------------------
       Action
  -------------------*/

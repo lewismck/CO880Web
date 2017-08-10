@@ -137,7 +137,7 @@ function sendRating() {
             setTimeout(nextStory, 50);//ensure the story change is clear show the spinner for a fraction of a second
             $("#story").append(response);
             //nextStory();
-            $("#rateButton").text("Rate!");
+            $("#rateButton").text("Next");
       }
     });
 }

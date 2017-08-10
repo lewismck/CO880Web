@@ -18,7 +18,7 @@
 //Require the classes file
 require_once('classes.php');
 
-//TODO if this require and connect are repeated - put them in a function/separate file? Maybe Main->setup();?
+//TODO if this require and connect are repeated - put them in a function/separate file?
 //Require the connect function for the database
 require_once('connect.php');
 $conn = connect();
@@ -42,38 +42,12 @@ $rc = new ReflectionCycle($sm);
  ----------------------------------------------------------*/
 if($params->func == 'setup'){
   $kbData = $main->setup();
-  //TODO split the storyParams setup and the setup setup into 2 functions?
 
-  /*Get some story data and echo is to turn into charts*/
-  $goodStoryData = $main->getStoryData('g');
-  $passableGSD = json_encode($goodStoryData);
-  $badStoryData = $main->getStoryData('b');
-  $passableBSD = json_encode($badStoryData);
-  $passableSortedBadActions = json_encode($main->turnKBDataToArray($kbData->action_seq_b));
-  $passableSortedActions = json_encode($main->turnKBDataToArray($kbData->action_seq));
-  $passableSortedBadEvents = json_encode($main->turnKBDataToArray($kbData->event_seq_b));
-  $passableSortedEvents = json_encode($main->turnKBDataToArray($kbData->event_seq));
-  $passableSortedBadLocations = json_encode($main->turnKBDataToArray($kbData->location_seq_b));
-  $passableSortedLocations = json_encode($main->turnKBDataToArray($kbData->location_seq));
   //Echo the data from the knowledge base that the n-gram and markov functions need
   echo "<script>
           var ev_seq_kb = '".$kbData->event_seq."';
           var ac_seq_kb = '".$kbData->action_seq."';
           var loc_seq_kb = '".$kbData->location_seq."';
-          var sortedBadActions = ".$passableSortedBadActions.";
-          var sortedActions = ".$passableSortedActions.";
-          var sortedBadEvents = ".$passableSortedBadEvents.";
-          var sortedEvents = ".$passableSortedEvents.";
-          var sortedBadLocations = ".$passableSortedBadLocations.";
-          var sortedLocations = ".$passableSortedLocations.";
-          var ac_labels = [];
-          var ac_values = [];
-          var ev_labels = [];
-          var ev_values = [];
-          var loc_labels = [];
-          var loc_values = [];
-          var gsd = ".$passableGSD.";
-          var bsd = ".$passableBSD.";
         </script>";
 
   //Random event seed:
@@ -133,10 +107,7 @@ if($params->func == 'setup'){
         $currentActionSeed = $row['ac_id'].",";
       }
       //Setup some data for the action frequency chart
-      echo "<script>ac_values.push(".$row['ac_id'].");
-              ac_labels.push('".$row['brief']."');
-            </script>
-            <option value='".$currentActionSeed."'>".$row['brief']."</option>";
+      echo "<option value='".$currentActionSeed."'>".$row['brief']."</option>";
     }
     echo "</select><br>";
   }
@@ -154,14 +125,11 @@ if($params->func == 'setup'){
         $currentEventSeed = $row['event_id'].",";
       }
       //Setup some data for the action frequency chart
-      echo "<script>ev_values.push(".$row['event_id'].");
-              ev_labels.push('".$row['brief']."');
-            </script>
-            <option value='".$currentEventSeed."'>".$row['brief']."</option>";
+      echo "<option value='".$currentEventSeed."'>".$row['brief']."</option>";
     }
     echo "</select><br>";
   }
-  // echo "<label>Event Cycle Count: </label><input type=\"number\" min=\"1\" max=\"10\"  id=\"ev_cycle_count\"></input><br>";
+
   /*-------------------
       Location Seed
   --------------------*/
@@ -176,37 +144,13 @@ if($params->func == 'setup'){
         $currentLocSeed = $row['loc_id'].",";
       }
       //Setup some data for the action frequency chart
-      echo "<script>loc_values.push(".$row['loc_id'].");
-              loc_labels.push('".$row['name']."');
-            </script>
-            <option value='".$row['loc_id'].",'>".$row['name']."</option>";
+      echo "<option value='".$row['loc_id'].",'>".$row['name']."</option>";
     }
     echo "</select><br>";
   }
-  /*-----------------------------------------------
-      Static params (now just plain HTML in main)
-  ------------------------------------------------*/
-  // echo "<label>Action Choice: </label><br>
-  //       <input type=\"radio\" name=\"action_choice\" value=\"cm\" onchange=\"disableSeed()\" checked> Character Motivation<br>
-  //       <input type=\"radio\" name=\"action_choice\" value=\"markov\" onchange=\"disableSeed()\" > Markov Chain<br>
-  //       <input type=\"radio\" name=\"action_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-  //       <label>Event Choice: </label><br>
-  //       <input type=\"radio\" name=\"event_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
-  //       <input type=\"radio\" name=\"event_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-  //       <label>Location Choice: </label><br>
-  //       <input type=\"radio\" name=\"location_choice\" value=\"markov\" onchange=\"disableSeed()\" checked> Markov Chain<br>
-  //       <input type=\"radio\" name=\"location_choice\" value=\"random\" onchange=\"disableSeed()\"> Random<br>
-  //       <label>Allow Doppelgangers: </label><br>
-  //       <label class=\"switch\">
-	//   	    <input type=\"checkbox\" id=\"allow_dop\">
-  // 	      <span class=\"slider round\"></span>
-  //       </label>
-  //     	<br>
-  //     	<label>Respect Death: </label><br>
-  //       <label class=\"switch\">
-	//   	    <input type=\"checkbox\" id=\"rd\">
-  // 	      <span class=\"slider round\"></span>
-  //       </label><br>";
+  /*--------------------------------------------------------
+      Static params (now just plain HTML in generator.php)
+  ---------------------------------------------------------*/
 
 }
 
@@ -493,6 +437,7 @@ elseif($params->func == 'getChartData'){
   $passableSortedBadLocations = json_encode($main->turnKBDataToArray($kbData->location_seq_b));
   $passableSortedLocations = json_encode($main->turnKBDataToArray($kbData->location_seq));
   //Echo the data from the knowledge base that the n-gram and markov functions need
+  //This will be re-thought when I redo the charts module - the event/loc/action frequencies aren't used at all anymore
   echo "<script>
           var sortedBadActions = ".$passableSortedBadActions.";
           var sortedActions = ".$passableSortedActions.";
@@ -510,10 +455,11 @@ elseif($params->func == 'getChartData'){
           var bsd = ".$passableBSD.";
         </script>";
 }
+/*---------------------------------------------------
+  If no recognised function passed, just dump params
+ ---------------------------------------------------*/
 else{
   //echo $params->func;
-  var_dump($params);
-  echo "url func: ".$_GET['func']."<br>";
-  echo "Params->func: ".$params->func."<br>";
+  $main->echoParams($params); //Return the parsed params to the browser DOM
 }
  ?>

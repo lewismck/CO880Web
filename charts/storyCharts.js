@@ -1,8 +1,11 @@
-
+/**
+ * @author Lewis Mckeown
+ **/
 /*-------------------------------
   Generate the charts comparing
   the evaluated story data and
-  put them in the canvases
+  put them in the labelled
+  canvases
  -------------------------------*/
 function generateCharts(){
   /*Fill an array with enough colour entries for every x tick on the charts*/
@@ -171,97 +174,3 @@ function generateCharts(){
 /*---------------------------
   Deprecated chartJS stuff
  ---------------------------*/
-// "rgba(54, 162, 235, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)"],"borderColor":["rgb(54, 162, 235)","rgb(255, 159, 64)","rgb(255, 205, 86)","rgb(75, 192, 192)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"
-// "rgba(255, 99, 132, 0.2)","rgba(255, 159, 64, 0.2)","rgba(255, 205, 86, 0.2)","rgba(75, 192, 192, 0.2)","rgba(54, 162, 235, 0.2)","rgba(153, 102, 255, 0.2)","rgba(201, 203, 207, 0.2)"],"borderColor":["rgb(255, 99, 132)","rgb(255, 159, 64)","rgb(255, 205, 86)","rgb(75, 192, 192)","rgb(54, 162, 235)","rgb(153, 102, 255)","rgb(201, 203, 207)"
-// //Good story doughnut
-// new Chart(
-// document.getElementById("good-story-chart")
-// ,{"type":"doughnut","data":{"labels":["Markov Event"
-//   ,"Random Event"
-//   ,"Markov Action"
-//   ,"Character Motivation Action"
-//   ,"Random Action"
-//   , "Random Location"
-//   , "Markov Location"]
-// ,"datasets":[{"label":"Good Story Data"
-// ,"data":[gsd.markov_event
-//   ,gsd.random_event
-//   ,gsd.markov_action
-//   ,gsd.cm_action
-//   ,gsd.random_action
-//   ,gsd.random_location
-//   ,gsd.markov_location]
-// ,"backgroundColor":["rgb(255, 99, 132)"
-//   ,"rgb(54, 162, 235)"
-//   ,"rgb(255, 205, 86)"
-//   ,"rgb(255, 59, 102)"
-//   ,"rgb(255, 204, 132)"
-//   , "rgb(255, 100, 90)"]}]}});
-
-// new Chart(
-//   document.getElementById("good-story-constraints")
-// ,{"type":"doughnut"
-// ,"data":{"labels":["No Doppelgangers"
-//   ,"Allow Doppelgangers"
-//   ,"Ignore Death"
-//   ,"Respect Death"]
-// ,"datasets":[{"label":"Good Story Constraints"
-// ,"data":[gsd.no_doppelgangers
-//   ,gsd.allow_doppelgangers
-//   ,gsd.ignore_death
-//   ,gsd.respect_death]
-// ,"backgroundColor":["rgb(255, 99, 132)"
-//   ,"rgb(54, 162, 235)"
-//   ,"rgb(255, 205, 86)"
-//   ,"rgb(255, 59, 102)"]}]}});
-//
-//
-//   new Chart(
-//   document.getElementById("bad-story-constraints")
-//   ,{"type":"doughnut","data":{"labels":["No Doppelgangers"
-//     ,"Allow Doppelgangers"
-//     ,"Ignore Death"
-//     ,"Respect Death"]
-//   ,"datasets":[{"label":"Good Story Constraints"
-//   ,"data":[bsd.no_doppelgangers
-//     ,bsd.allow_doppelgangers
-//     ,bsd.ignore_death
-//     ,bsd.respect_death]
-//   ,"backgroundColor":["rgb(255, 99, 132)"
-//     ,"rgb(54, 162, 235)"
-//     ,"rgb(255, 205, 86)"
-//     ,"rgb(255, 59, 102)"]}]}});
-
-// new Chart(
-//   document.getElementById("good-story-constraints")
-// ,{"type":"doughnut"
-// ,"data":{"labels":["No Doppelgangers"
-//   ,"Allow Doppelgangers"
-//   ,"Ignore Death"
-//   ,"Respect Death"]
-// ,"datasets":[{"label":"Good Story Constraints"
-// ,"data":[gsd.no_doppelgangers
-//   ,gsd.allow_doppelgangers
-//   ,gsd.ignore_death
-//   ,gsd.respect_death]
-// ,"backgroundColor":["rgb(255, 99, 132)"
-//   ,"rgb(54, 162, 235)"
-//   ,"rgb(255, 205, 86)"
-//   ,"rgb(255, 59, 102)"]}]}});
-//
-//
-//   new Chart(
-//   document.getElementById("bad-story-constraints")
-//   ,{"type":"doughnut","data":{"labels":["No Doppelgangers"
-//     ,"Allow Doppelgangers"
-//     ,"Ignore Death"
-//     ,"Respect Death"]
-//   ,"datasets":[{"label":"Good Story Constraints"
-//   ,"data":[bsd.no_doppelgangers
-//     ,bsd.allow_doppelgangers
-//     ,bsd.ignore_death
-//     ,bsd.respect_death]
-//   ,"backgroundColor":["rgb(255, 99, 132)"
-//     ,"rgb(54, 162, 235)"
-//     ,"rgb(255, 205, 86)"
-//     ,"rgb(255, 59, 102)"]}]}});

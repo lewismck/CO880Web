@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!-- Presents a button to generate stories and an option to view params -->
+<!-- Presents a button to generate stories and buttons to view params and log the stories to the console -->
 <head>
 	<meta charset="utf-8">
 	<link href="http://fonts.googleapis.com/css?family=Lato:100,300,400" rel="stylesheet" type="text/css">
@@ -11,8 +11,6 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <!-- Project specific JS - Makes calls to different PHP scripts which in turn call functions in this file -->
 	<script src="ajax/js/phpcalls.js"></script>
-	<script src="charts/chart.js"></script>
-	<script src="charts/storyCharts.js"></script>
 	<!-- Project specific styles -->
 	<link rel="stylesheet" href="Styles/main.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -49,9 +47,6 @@
 		  	    <input type="checkbox" id="rd">
 	  	      <span class="slider round"></span>
 	        </label><br>
-				</div>
-
-				<div>
 					<input type="submit" value="Generate" class="btn btn-primary"></br></br>
 				</div>
 			</fieldset>
@@ -73,19 +68,15 @@
 				<option value="tightlyConstrained">tightlyConstrained</option>
 			</select>
 			<button type="button" class="btn btn-default" onclick="logGeneratedStories();">Log Stories</button><br><br>
-		</div>
-	</div>
-	<div class="col-md-12 row">
-		<div class="col-md-8 col-md-offset-2 text-center" id="page-footer">
 			<!-- View the passed parameters and returned data  -->
 			<button type="button" class="btn btn-default" data-toggle="modal" data-target="#paramsModal">View Params</button><br><br>
-			<!-- Go to the stats module  -->
-			<a href="stats.html"><button type="button" class="btn btn-default" >Go To Stats</button></a><br><br>
-			<!-- Go to the user feedback module  -->
-			<a href="UserEvaluation/index.html"><button type="button" class="btn btn-default" >Go To Feedback Page</button></a><br><br>
 		</div>
 	</div>
 
+	<div class="col-md-12 row">
+		<!-- Include the generic footer -->
+		<?php include 'ajax/php/footer.php'; ?>
+	</div>
 
 	<!-- Modals -->
 	<!-- Params -->
@@ -99,41 +90,6 @@
 	      </div>
 	      <div class="modal-body">
 	        <div id="storyBox"></div>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	      </div>
-	    </div>
-	  </div>
-	</div>
-
-	<!-- Charts and Data -->
-	<div id="chartsModal" class="modal fade" role="dialog">
-	  <div class="modal-dialog modal-lg">
-	    <!-- content -->
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal">&times;</button>
-	        <h4 class="modal-title">Charts and Data</h4>
-	      </div>
-	      <div class="modal-body">
-					<div>
-						<h4 class="text-center">Story Choice Breakdown</h4>
-		        <canvas id="comparison-story-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
-					</div>
-					<div>
-						<h4 class="text-center">Story Constraints</h4>
-						<h5 class="text-center">Binary Toggles</h4>
-						<canvas id="comparison-story-chart-2" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
-					</div>
-					<div>
-						<h4 class="text-center">Action Frequency</h4>
-						<canvas id="action_frequency_chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
-						<h4 class="text-center">Event Frequency</h4>
-						<canvas id="event_frequency_chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
-						<h4 class="text-center">Location Frequency</h4>
-						<canvas id="location_frequency_chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas><br>
-					</div>
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

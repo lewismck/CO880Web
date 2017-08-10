@@ -1,9 +1,6 @@
 /**
  * @author Lewis Mckeown
- * This code will form part of the corpus for my MSc submission
- * Following this it will probably be available on github.
  **/
-
 /*----------------------------------------------------
   Quick Styling that Bootstrap doesn't take care of
  -----------------------------------------------------*/
@@ -36,11 +33,6 @@ h1 {
   font-weight: 200;
   text-align: center;
 }
-
-/*h1 > .co880Title{
-	border-bottom: 4px dashed #ccc;
-	padding-bottom: 2%;
-}*/
 
 /*.story-comp{
 	color: black;
