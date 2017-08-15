@@ -64,7 +64,47 @@ class Main {
   }
 
   /**
-   * @param a string containing a list of values
+   * Get the creativity ratings
+   * @return the average creativity ratings for each dataset as an array
+   **/
+  function getCreativityRatings(){
+    global $avgCreativityRatings;
+    $cr = executeQuery($avgCreativityRatings);
+
+    $creativityRatings = array();
+    foreach ($cr as $row) {
+      array_push($creativityRatings, $row['AVG(creativity_rating)']);
+    }
+    //
+    // array_push($creativityRatings, $cr[1]['AVG(creativity_rating)']);
+    // array_push($creativityRatings, $cr[2]['AVG(creativity_rating)']);
+    // array_push($creativityRatings, $cr[3]['AVG(creativity_rating)']);
+
+    return $creativityRatings;
+  }
+
+  /**
+   * Get the Unliked/Likes for each dataset
+   * @return the dislikes and likes for each dataset as an array
+   **/
+  function getLikeToDislike(){
+    global $getLikeAndDislike;
+    $dl = executeQuery($getLikeAndDislike);
+
+    $likeAndDislike = array();
+    foreach ($dl as $row) {
+      array_push($likeAndDislike, $row['likeOrDislike']);
+    }
+    //
+    // array_push($likeAndDislike, $cr[1]['AVG(creativity_rating)']);
+    // array_push($likeAndDislike, $cr[2]['AVG(creativity_rating)']);
+    // array_push($likeAndDislike, $cr[3]['AVG(creativity_rating)']);
+
+    return $likeAndDislike;
+  }
+
+  /**
+   * @param a string containing a comma separated, list of values
    * @return an array list of the values with their frequency in key-value pairs
    * Turn a string from the KB into a list containing key-value pairs
    * of items and their frequency
@@ -159,11 +199,10 @@ class Main {
    **/
   public function rateLatestStory($rating){
     global $updateStoryRating;
-    // $latest_id_request = executeQuery($getLatestStoryIDQuery);
     $latest_id = $this->getLatestStoryID();
 
-    $updateStatement = $updateStoryRating." '".$rating."' WHERE es.story_id =".$latest_id;
-    $result = executeInsert($updateStatement);
+    $updateStoryStatement = $updateStoryRating." '".$rating."' WHERE es.story_id =".$latest_id;
+    $result = executeInsert($updateStoryStatement);
     return $result;
   }
 

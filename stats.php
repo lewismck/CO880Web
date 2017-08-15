@@ -40,6 +40,57 @@
 		<canvas id="comparison-story-chart-2" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
 	</div>
 </div>
+<div class="col-md-12 row text-center">
+	<br>
+	<h1>User Feedback</h1>
+	<br>
+	<a href="#feedbackBreakdown" data-toggle="collapse">Show/Hide User Feedback Explanation</a>
+  <div id="feedbackBreakdown" class="collapse in">
+    <p>To assess the creativity of the system, I generated output for 3 cycles, with 4 different levels of constraints:</p>
+		<div class="col-md-8 col-md-offset-2">
+			<table class="table table-bordered table-hover">
+				<tr><th></th><th>Action Choice</th><th>Event Choice</th><th>Location Choice</th><th>Respect Death</th><th>Allow Doppelgangers</th></tr>
+				<tr><th>Tightly Constrained</th><td>Character Motivation</td><td>Markov</td><td>Markov</td><td>True</td><td>False</td></tr>
+				<tr><th>Moderately Constrained (set 1)</th><td>Markov</td><td>Random</td><td>Random</td><td>True</td><td>False</td></tr>
+				<tr><th>Moderately Constrained (set 2)</th><td>Markov</td><td>Markov</td><td>Random</td><td>True</td><td>False</td></tr>
+				<tr><th>Unconstrained</th><td>Random</td><td>Random</td><td>Random</td><td>False</td><td>True</td></tr>
+			</table>
+		</div>
+		<div class="row col-md-8 col-md-offset-2">
+			<p>To see the stories evaluated and exactly how the questions were asked, click <a href="http://raptor.kent.ac.uk/~lam54/co880/UserEvaluation/index.html">here</a>.</p>
+			<p>I then asked users to what extent they agreed the stories demonstrated creativity (with <a href="#definitions" data-toggle="collapse">these definitions</a> as a guide) and then asked if they liked the story. These two questions were designed to separate the users judgement about the creativity of the story from any other judgements about it's quality.</p>
+			<div id="definitions" class="collapse">
+				<blockquote>
+					<p>The ability to produce original and unusual ideas, or to make something new or imaginative.</p>
+					<footer><cite><a href="http://dictionary.cambridge.org/dictionary/english/creativity" target="_blank">Cambridge Dictionary</a></cite></footer>
+				</blockquote>
+				<br>
+				<blockquote>
+					<p>The ability to transcend traditional ideas, rules, patterns, relationships, or the like, and to create meaningful new ideas, forms, methods, interpretations, etc.; originality, progressiveness, or imagination.</p>
+					<footer><cite><a href="http://www.dictionary.com/browse/creativity" target="_blank">Dictionary.com</a></cite></footer>
+				</blockquote>
+			</div>
+			<p>Creativity was rated based on to what extent they agreed it was demonstrated using this scale:<br>
+				Strongly Agree = 2<br>
+				Agree = 1<br>
+				Neutral = 0<br>
+				Disagree = -1<br>
+				Strongly Disagree = -2<br>
+				This is converted into a chart below showing the average for each 4 datasets.
+			</p>
+		</div>
+  </div>
+</div>
+<div class="col-md-12 row">
+	<div class="col-md-6">
+		<h4 class="text-center">Average Creativity Ratings</h4>
+		<canvas id="avg-creativity-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
+	</div>
+	<div class="col-md-6">
+		<h4 class="text-center">Like To Not Liked</h4>
+		<canvas id="like-dislike-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
+	</div>
+</div>
 <div class="col-md-12 row">
 	<br>
 	<h1>Story Component Breakdowns</h1>

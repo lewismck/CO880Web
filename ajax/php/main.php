@@ -38,7 +38,7 @@ $rc = new ReflectionCycle($sm);
 /*-----------------------------------------------------------
  * Call the setup function of Main to get a KB_Data object
  * echo the data as javascript variables to use
- * later in markovIt and makeNgrams
+ * later in buildMarkov and makeNgrams
  ----------------------------------------------------------*/
 if($params->func == 'setup'){
   $kbData = $main->setup();
@@ -436,6 +436,8 @@ elseif($params->func == 'getChartData'){
   $passableSortedEvents = json_encode($main->turnKBDataToArray($kbData->event_seq));
   $passableSortedBadLocations = json_encode($main->turnKBDataToArray($kbData->location_seq_b));
   $passableSortedLocations = json_encode($main->turnKBDataToArray($kbData->location_seq));
+  $passableAVGcreativity = json_encode($main->getCreativityRatings());
+  $passableLikeDislike = json_encode($main->getLikeToDislike());
   //Echo the data from the knowledge base that the n-gram and markov functions need
   //This will be re-thought when I redo the charts module - the event/loc/action frequencies aren't used at all anymore
   echo "<script>
@@ -445,6 +447,8 @@ elseif($params->func == 'getChartData'){
           var sortedEvents = ".$passableSortedEvents.";
           var sortedBadLocations = ".$passableSortedBadLocations.";
           var sortedLocations = ".$passableSortedLocations.";
+          var avgCreativity = ".$passableAVGcreativity.";
+          var likeToDislike = ".$passableLikeDislike.";
           var ac_labels = [];
           var ac_values = [];
           var ev_labels = [];

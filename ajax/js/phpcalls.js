@@ -91,7 +91,7 @@ function getStory() {
   if(ev_choice == 'markov'){
     var ev_seed = $("#ev_seed").val();
     var ev_n_grams = makeNgrams2(ev_seq_kb, 2);
-    var ev_seq = markovIt(ev_seed, ev_n_grams, 2, (cycle_count*1)+2);
+    var ev_seq = buildMarkov(ev_seed, ev_n_grams, 2, (cycle_count*1)+2);
   }
   else{
     ev_seq = '';
@@ -100,7 +100,7 @@ function getStory() {
   if(loc_choice == 'markov'){
     var loc_seed = $("#loc_seed").val();
     var loc_n_grams = makeNgrams2(loc_seq_kb, 2);
-    var loc_seq = markovIt(loc_seed, loc_n_grams, 2, (cycle_count*1)+2);
+    var loc_seq = buildMarkov(loc_seed, loc_n_grams, 2, (cycle_count*1)+2);
   }
   else{
     loc_seq = '';
@@ -109,7 +109,7 @@ function getStory() {
   if(ac_choice == 'markov'){
     var ac_seed = $("#ac_seed").val();
     var ac_n_grams = makeNgrams2(ac_seq_kb, 2);
-    var ac_seq = markovIt(ac_seed, ac_n_grams, 2, (cycle_count*1)+2);
+    var ac_seq = buildMarkov(ac_seed, ac_n_grams, 2, (cycle_count*1)+2);
   }
   else{
     ac_seq = '';
@@ -436,7 +436,7 @@ function disableSeed(){
   * @param the n gram size
   * @return the object containing the n-grams
   * Turns a string into an array containing n-grams of size n
-  * The 'grams' are equal to n to enable a selection of sensible storyComponent keys when calling markovIt()
+  * The 'grams' are equal to n to enable a selection of sensible storyComponent keys when calling buildMarkov()
   * (a genuine n-gram generator function is makeNgrams in the deprecated functions)
  **/
 function makeNgrams2(src, n){
@@ -462,7 +462,7 @@ function makeNgrams2(src, n){
   * @return the string containing the n-grams
   * Turns a string into an array containing n-grams of size n
  **/
-function markovIt(seed, ngrams, n, limit){
+function buildMarkov(seed, ngrams, n, limit){
  var currentGram = seed;
  var result = currentGram;
 

@@ -78,6 +78,57 @@ function generateCharts(){
     ,bsd.respect_death]
   ,"fill":true,"backgroundColor":"rgba(255, 99, 132, 0.2)","borderColor":"rgb(255, 99, 132)","pointBorderColor":"#fff","pointHoverBackgroundColor":"#fff"}]}});
 
+
+
+  /*------------------------
+    AVG creativity ratings
+   ------------------------*/
+   new Chart(
+     document.getElementById("avg-creativity-chart")
+     ,{"type":"line"
+     ,"data":{"labels":["Unconstrained","Moderately Constrained (set 1)","Moderately Constrained (set 2)","Tightly Constrained"]
+     ,"datasets":[{"label":"Average Creativity Ratings","data": avgCreativity
+     ,"fill":false
+     ,"borderColor":"rgb(75, 192, 192)"
+     ,"lineTension":0.1}]}
+     //,"options":{"scales":{"yAxes":[{"ticks":{"suggestedMin":-2, "suggestedMax":2}}]
+    //}}
+   });
+
+   /*------------------------
+     Like to Dislike chart
+    ------------------------*/
+   new Chart(
+     document.getElementById("like-dislike-chart")
+     ,{"type":"bar"
+     ,"data":{"labels":["Liked","Not Liked"]
+     ,"datasets":[{"label":"Unconstrained"
+      ,"data":[likeToDislike[1], likeToDislike[0]]
+      ,"fill":false,"backgroundColor":["rgba(255, 99, 132, 0.2)","rgba(255, 99, 132, 0.2)"]
+      ,"borderColor":["rgb(255, 99, 132)","rgb(255, 99, 132)"]
+      ,"borderWidth":1}
+      ,{"label":"Moderately Constrained (set 1)"
+      ,"data":[likeToDislike[3], likeToDislike[2]]
+      ,"fill":false,"backgroundColor":["rgba(255, 159, 64, 0.2)","rgba(255, 159, 64, 0.2)"]
+      ,"borderColor":["rgb(255, 205, 86)","rgb(255, 205, 86)"]
+      ,"borderWidth":1}
+      ,{"label":"Moderately Constrained (set 2)"
+      ,"data":[likeToDislike[5], likeToDislike[4]]
+      ,"fill":false,"backgroundColor":["rgba(199, 189, 132, 0.2)","rgba(199, 189, 132, 0.2)"]
+      ,"borderColor":["rgb(255, 99, 132)","rgb(255, 159, 64)"]
+      ,"borderWidth":1}
+      ,{"label":"Tightly Constrained"
+      ,"data":[likeToDislike[7], likeToDislike[6]]
+      ,"fill":false,"backgroundColor":["rgba(67, 99, 132, 0.2)","rgba(67, 99, 132, 0.2)"]
+      ,"borderColor":["rgb(255, 159, 64)","rgb(255, 159, 64)"]
+      ,"borderWidth":1}
+      ]
+    }
+      ,"options":{"scales":{"yAxes":[{"ticks":{"beginAtZero":true}}]}}
+    });
+
+
+
   /*------------------------
     Action Frequency Chart
    ------------------------*/

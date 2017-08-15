@@ -34,6 +34,21 @@ h1 {
   text-align: center;
 }
 
+.panel {
+    border: 1px solid #ccc;
+    border-radius:0;
+}
+.panel-header{
+	background: #ccc;
+}
+.panel-body{
+	text-align: center;
+}
+
+.index-row{
+	padding-top: 2%;
+	padding-bottom: 2%;
+}
 /*.story-comp{
 	color: black;
 	text-decoration: underline wavy blue !important;

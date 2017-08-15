@@ -40,7 +40,7 @@
 				<a href="stats.php"><h4 class="text-center">Stats</h4></a>
 			</div>
 			<div class="panel-body">
-				<p>The stats page contains charts breaking down the user feedback and the contents of the knowledge base.</p>
+				<p>The generator is used to create stories and to rate and log the output.</p>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -48,7 +48,7 @@
 				<a href="UserEvaluation/index.html"><h4 class="text-center">User Evaluation (raptor)</h4></a>
 			</div>
 			<div class="panel-body">
-				<p>The user feedback page asks for feedback on a selection of stories generated with differing levels of constraints.</p>
+				<p>The generator is used to create stories and to rate and log the output.</p>
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -56,7 +56,7 @@
 				<a href="http://co880.lewismckeown.com"><h4 class="text-center">User Evaluation (external)</h4></a>
 			</div>
 			<div class="panel-body">
-				<p>The user feedback page asks for feedback on a selection of stories generated with differing levels of constraints.</p>
+				<p>The generator is used to create stories and to rate and log the output.</p>
 			</div>
 		</div>
 	</div>

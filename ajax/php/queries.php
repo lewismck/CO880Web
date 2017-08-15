@@ -1,4 +1,7 @@
 <?php
+  /**
+   * @author Lewis Mckeown
+   **/
   /*--------------------------------------
     Queries used by the classes.php file
     split by what class uses them, named
@@ -209,5 +212,27 @@
                     UNION ALL
                     SELECT COUNT(*) FROM evaluated_story es WHERE es.rating='b' AND es.respect_death  = 1;";
 
+  $avgCreativityRatings = "SELECT AVG(creativity_rating) FROM user_feedback WHERE dataset = 'unconstrained'
+                           UNION ALL
+                           SELECT AVG(creativity_rating) FROM user_feedback WHERE dataset = 'moderatelyConstrained1'
+                           UNION ALL
+                           SELECT AVG(creativity_rating) FROM user_feedback WHERE dataset = 'moderatelyConstrained2'
+                           UNION ALL
+                           SELECT AVG(creativity_rating) FROM user_feedback WHERE dataset ='tightlyConstrained';";
 
+  $getLikeAndDislike = "SELECT COUNT(*) likeOrDislike FROM user_feedback WHERE dataset = 'unconstrained' and liked = 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'unconstrained' and liked != 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'moderatelyConstrained1' and liked = 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'moderatelyConstrained1' and liked != 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'moderatelyConstrained2' and liked = 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'moderatelyConstrained1' and liked != 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'tightlyConstrained' and liked = 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'tightlyConstrained' and liked != 'false';";
  ?>
