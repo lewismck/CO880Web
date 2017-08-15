@@ -36,7 +36,7 @@ function generateCharts(){
     ,"Random Action"
     , "Random Location"
     , "Markov Location"]
-  ,"datasets":[{"label":"Good Story Data"
+  ,"datasets":[{"label":"Positively Evaluated"
   ,"data":[gsd.markov_event
     ,gsd.random_event
     ,gsd.markov_action
@@ -45,7 +45,7 @@ function generateCharts(){
     ,gsd.random_location
     ,gsd.markov_location]
   ,"fill":true,"backgroundColor":"rgba(54, 162, 235, 0.2)","borderColor":"rgb(54, 162, 235)","pointBackgroundColor":"rgb(54, 162, 235)","pointBorderColor":"#fff","pointHoverBackgroundColor":"#fff"}
-  ,{"label":"Bad Story Data"
+  ,{"label":"Negatively Evaluated"
   ,"data":[bsd.markov_event
     ,bsd.random_event
     ,bsd.markov_action
@@ -65,13 +65,13 @@ function generateCharts(){
     ,"Ignore Death"
     ,"Allow Doppelgangers"
     ,"Respect Death"]
-  ,"datasets":[{"label":"Good Story Data"
+  ,"datasets":[{"label":"Positively Evaluated"
   ,"data":[gsd.no_doppelgangers
     ,gsd.ignore_death
     ,gsd.allow_doppelgangers
     ,gsd.respect_death]
   ,"fill":true,"backgroundColor":"rgba(54, 162, 235, 0.2)","borderColor":"rgb(54, 162, 235)","pointBackgroundColor":"rgb(54, 162, 235)","pointBorderColor":"#fff","pointHoverBackgroundColor":"#fff"}
-  ,{"label":"Bad Story Data"
+  ,{"label":"Negatively Evaluated"
   ,"data":[bsd.no_doppelgangers
     ,bsd.ignore_death
     ,bsd.allow_doppelgangers
@@ -104,23 +104,23 @@ function generateCharts(){
      ,"data":{"labels":["Liked","Not Liked"]
      ,"datasets":[{"label":"Unconstrained"
       ,"data":[likeToDislike[1], likeToDislike[0]]
-      ,"fill":false,"backgroundColor":["rgba(255, 99, 132, 0.2)","rgba(255, 99, 132, 0.2)"]
-      ,"borderColor":["rgb(255, 99, 132)","rgb(255, 99, 132)"]
+      ,"fill":false,"backgroundColor":["rgba(246, 114, 128, 0.2)","rgba(246, 114, 128, 0.2)"] //rgb(249, 196, 172) rgba(255, 99, 132, 0.2)
+      ,"borderColor":["rgb(246, 114, 128)","rgb(246, 114, 128)"]
       ,"borderWidth":1}
       ,{"label":"Moderately Constrained (set 1)"
       ,"data":[likeToDislike[3], likeToDislike[2]]
-      ,"fill":false,"backgroundColor":["rgba(255, 159, 64, 0.2)","rgba(255, 159, 64, 0.2)"]
-      ,"borderColor":["rgb(255, 205, 86)","rgb(255, 205, 86)"]
+      ,"fill":false,"backgroundColor":["rgba(192, 108, 132, 0.2)","rgba(192, 108, 132, 0.2)"] //rgba(255, 159, 64, 0.2)
+      ,"borderColor":["rgb(192, 108, 132)","rgb(192, 108, 132)"]
       ,"borderWidth":1}
       ,{"label":"Moderately Constrained (set 2)"
       ,"data":[likeToDislike[5], likeToDislike[4]]
-      ,"fill":false,"backgroundColor":["rgba(199, 189, 132, 0.2)","rgba(199, 189, 132, 0.2)"]
-      ,"borderColor":["rgb(255, 99, 132)","rgb(255, 159, 64)"]
+      ,"fill":false,"backgroundColor":["rgba(108, 91, 123, 0.2)","rgba(108, 91, 123, 0.2)"] //rgba(199, 189, 132, 0.2)
+      ,"borderColor":["rgb(108, 91, 123)","rgb(108, 91, 123)"]
       ,"borderWidth":1}
       ,{"label":"Tightly Constrained"
       ,"data":[likeToDislike[7], likeToDislike[6]]
-      ,"fill":false,"backgroundColor":["rgba(67, 99, 132, 0.2)","rgba(67, 99, 132, 0.2)"]
-      ,"borderColor":["rgb(255, 159, 64)","rgb(255, 159, 64)"]
+      ,"fill":false,"backgroundColor":["rgba(53, 92, 125, 0.2)","rgba(53, 92, 125, 0.2)"] //rgba(67, 99, 132, 0.2)
+      ,"borderColor":["rgb(53, 92, 125)","rgb(53, 92, 125)"]
       ,"borderWidth":1}
       ]
     }

@@ -95,10 +95,6 @@ class Main {
     foreach ($dl as $row) {
       array_push($likeAndDislike, $row['likeOrDislike']);
     }
-    //
-    // array_push($likeAndDislike, $cr[1]['AVG(creativity_rating)']);
-    // array_push($likeAndDislike, $cr[2]['AVG(creativity_rating)']);
-    // array_push($likeAndDislike, $cr[3]['AVG(creativity_rating)']);
 
     return $likeAndDislike;
   }
@@ -216,6 +212,44 @@ class Main {
     $latest_id = $latest_id_request[0]['story_id'];
     return $latest_id;
   }
+
+  /**
+   * Get an approximation of the Levenshtein distance for a sequence
+   * Compares the string to 50 random examples from the KB
+   * (TODO use a param or a dynamically chosen number? half/all of kb?)
+   * and averages the Levenshtein distance for them
+   * @param the string to get the Levenshtein distance for
+   * @param the type to compare against
+   * @param the dataset to compare to g/b (good or bad)
+   * @return the Levenshtein distance of the string to the KB
+   **/
+   public function getLevenshteinDistance($string, $type, $dataset){
+     global $actionSequenceRandomSelection, $eventSequenceRandomSelection, $locationSequenceRandomSelection;
+     if($type == 'action'){
+       $sequence = executeQuery($actionSequenceRandomSelection);
+     }
+     elseif ($type == 'location') {
+       $sequence = executeQuery($locationSequenceRandomSelection);
+     }
+     elseif ($type == 'event' ) {
+       $sequence = executeQuery($eventSequenceRandomSelection);
+     }
+
+     $avg_lev_array = array();
+
+     /*
+      * Get the Levenshtein distance for the story sequence compared to each of the returned set from the KB
+      * Push that to an array.
+      */
+     foreach ($sequence as $row) {
+       $lev = levenshtein($string, $row['seq']);
+       //echo $type." Levenshtein: ".$lev."<br>";
+       array_push($avg_lev_array, $lev);
+     }
+     //Calculate the average from the array and return it
+     $avg_lev = array_sum($avg_lev_array) / count($avg_lev_array);
+     return $avg_lev;
+   }
 }
 
 /*

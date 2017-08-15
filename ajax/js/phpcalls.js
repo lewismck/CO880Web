@@ -321,7 +321,7 @@ function getPrintableLocation(locArray, loc_offset){
  * Put buttons that call the evaluateStory block in main.php into the #evaluateBox
  */
 function showEvaluateStory(){
-  $("#evaluateBox").html("<a class='btn btn-default' onclick=\"evaluateStory2('g', 'good');\">Good!</a><br><a class='btn btn-default' onclick=\"evaluateStory2('b', 'bad');\">bad!</a><br>")
+  $("#evaluateBox").html("<a class='btn btn-default' onclick=\"evaluateStory2('g', 'good');\">Positive</a><br><a class='btn btn-default' onclick=\"evaluateStory2('b', 'bad');\">Negative</a><br>")
 }
 
 /**

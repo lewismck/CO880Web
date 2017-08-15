@@ -393,6 +393,11 @@ elseif ($params->func == 'getStory') {
          </script>";
     //Return the parsed params to the DOM
     $main->echoParams($params);
+    //Show the Levenshtein Distances for each component
+    echo "<h3>Levenshtein Distances for each section</h3>";
+    echo "Location Lev: ".$main->getLevenshteinDistance($story->location_sequence, 'location', 'g')."<br>";
+    echo "Action Lev: ".$main->getLevenshteinDistance($story->action_sequence, 'action', 'g')."<br>";
+    echo "Event Lev: ".$main->getLevenshteinDistance($story->event_sequence, 'event', 'g')."<br>";
 }
 
 /*----------------------------------

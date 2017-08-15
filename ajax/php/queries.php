@@ -49,6 +49,12 @@
 
   $saveCharacterInsert = "INSERT INTO evaluated_characters (character_obj, story_id) VALUES(";
 
+  $actionSequenceRandomSelection = "SELECT es.action_sequence seq FROM evaluated_story es WHERE es.rating = 'g' ORDER BY RAND() LIMIT 50;";
+
+  $locationSequenceRandomSelection = "SELECT es.location_sequence seq FROM evaluated_story es WHERE es.rating = 'g' ORDER BY RAND() LIMIT 50;";
+
+  $eventSequenceRandomSelection = "SELECT es.event_sequence seq FROM evaluated_story es WHERE es.rating = 'g' ORDER BY RAND() LIMIT 50;";
+
   /*-------------------------
     Reflection Cycle Queries
               &
