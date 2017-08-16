@@ -216,11 +216,11 @@ class Main {
   /**
    * Get an approximation of the Levenshtein distance for a sequence
    * Compares the string to 50 random examples from the KB
-   * (TODO use a param or a dynamically chosen number? half/all of kb?)
+   * (TODO use a param or a dynamically chosen number to compare against rather than hardcoded value? half/all of kb?)
    * and averages the Levenshtein distance for them
    * @param the string to get the Levenshtein distance for
    * @param the type to compare against
-   * @param the dataset to compare to g/b (good or bad)
+   * @param the dataset to compare to g/b (good or bad) This is not currently in use
    * @return the Levenshtein distance of the string to the KB
    **/
    public function getLevenshteinDistance($string, $type, $dataset){

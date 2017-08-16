@@ -103,6 +103,19 @@ function toggleHelp(){
     $("#help").show(200,'linear');
   }
 }
+
+/**
+ * Disable the next button if the consent checkbox is not checked
+ **/
+function checkConsent(){
+  if($("#consent").is(":checked")){
+    $("#rateButton").prop('disabled', false);
+  }
+  else{
+    $("#rateButton").prop('disabled', true);
+  }
+}
+
 /**
  * Call the userFeedback script to validate and save the rating
  *

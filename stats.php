@@ -76,7 +76,7 @@
 				Neutral = 0<br>
 				Disagree = -1<br>
 				Strongly Disagree = -2<br>
-				This is converted into a chart below showing the average for each 4 datasets.
+				This is converted into a chart below showing the average for each of the datasets.
 			</p>
 		</div>
   </div>
@@ -87,7 +87,7 @@
 		<canvas id="avg-creativity-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
 	</div>
 	<div class="col-md-6">
-		<h4 class="text-center">Like To Not Liked</h4>
+		<h4 class="text-center">Liked To Not Liked</h4>
 		<canvas id="like-dislike-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
 	</div>
 </div>
