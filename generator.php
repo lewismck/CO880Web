@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-<!-- Presents a button to generate stories and buttons to view params and log the stories to the console -->
+<!--
+		Presents a button to generate stories and buttons to view params and log the stories to the console
+		@author Lewis Mckeown
+ -->
 <head>
 	<meta charset="utf-8">
 	<link href="http://fonts.googleapis.com/css?family=Lato:100,300,400" rel="stylesheet" type="text/css">

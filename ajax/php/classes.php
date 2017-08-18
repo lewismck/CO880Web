@@ -1,8 +1,13 @@
 <?php
-/*--------------------------------------------------------------------------------------
+/**
+ * @author Lewis Mckeown
+ **/
+/*-----------------------------------------------------------------------------------------------------------------
  Classes for the main story components: Person, Location, Action, Event (and their consequences -- now deprecated)
- Also contains a StoryMaker class with functions for creating and returning the story components and a ReflectionCycle class for generating actions/events/locations in loops
- ---------------------------------------------------------------------------------------*/
+ Also contains a StoryMaker class with functions for creating and returning the story components
+ and a ReflectionCycle class for generating actions/events/locations in loops
+ See the Class Diagrams.pdf (linked in the corpus) for the original plans for the classes here
+ ------------------------------------------------------------------------------------------------------------------*/
 
 require_once('queries.php'); //Require the queries.php file - contains all the SQL code used
 
@@ -75,10 +80,6 @@ class Main {
     foreach ($cr as $row) {
       array_push($creativityRatings, $row['AVG(creativity_rating)']);
     }
-    //
-    // array_push($creativityRatings, $cr[1]['AVG(creativity_rating)']);
-    // array_push($creativityRatings, $cr[2]['AVG(creativity_rating)']);
-    // array_push($creativityRatings, $cr[3]['AVG(creativity_rating)']);
 
     return $creativityRatings;
   }
@@ -110,6 +111,7 @@ class Main {
     $sortedArray = array_count_values($kbToArray);
     return $sortedArray;
   }
+
   /**
    * @param array (_GET/_POST) containing parameters to be parsed.
    * @return a ParsedParams object with the fields in $params filled
@@ -296,7 +298,6 @@ class StoryData {
      $this->ignore_death = $ignore_death;
      $this->respect_death = $respect_death;
    }
-  //echo "<script>var re = ".$goodStoryData[0]['story_data'].";</script>";
 }
 
 /*
@@ -380,7 +381,6 @@ class Person {
    $this->descID = $descID;
    $this->age = $age;
    $this->temperment = $temperment;
-   //$this->$emotional_state = $emotional_state;
   }
 
   /**
@@ -518,9 +518,9 @@ class Location {
   }
   }
 
-  /*
-   * A class for the action and their components
-   */
+/*
+ * A class for the action and their components
+ */
 class Action {
   public $id;
   public $brief;
@@ -617,8 +617,6 @@ class EventCon {
 /*
  * Run cycles of actions, locations or events with different parameters
  * for the rulesets involved
- * TODO refactor to extend StoryMaker - Change creation statements?
- * TODO when refactored move getXbyID functions to StoryMaker
  */
 class ReflectionCycle{
   private $reflectSM;
@@ -627,14 +625,6 @@ class ReflectionCycle{
   public function __construct(StoryMaker $reflectSM){
     $this->reflectSM = $reflectSM;
   }
-
-   /*
-   *TODO refactor actionCycle and eventCycle functions to have generic private
-   * functions that they call and different parameters or event/actionCycle
-   * functions that set the rulesets used e.g. one for using Markov - one for
-   * character motivations
-   *TODO have an actionCycle that repeats until 1 character is happy or both characters are happy/unhappy
-   */
 
    /**
     * Pick an action based on character's emotional states
@@ -704,7 +694,7 @@ class ReflectionCycle{
     * @param char1 a person object type
     * @param char2 a person object type
     * @param the character that should be updated
-    * @Return an action - also updates c1_es and c2_es and arcs
+    * @return an action - also updates c1_es and c2_es and arcs
     **/
     public function updateCharFromAction($action, $char1, $char2, $charToUpdate){
      if($action->solo_action == 1){ //if it's a solo action update the right character
@@ -724,9 +714,11 @@ class ReflectionCycle{
        $char2->updateES($action->c2_es, $action->c2_es_desc);
      }
     }
-    /*
+
+    /**
      * Pick an action at random and return it
-     */
+     * @return a random action
+     **/
      public function pickRandomAction(){
         global $actionStatementGet;
         $actionStatement = $actionStatementGet."ORDER BY RAND() LIMIT 1;";
@@ -747,6 +739,7 @@ class ReflectionCycle{
 
     /**
      * Pick a new event at random and return it
+     * @return a random event
      **/
     public function pickRandomEvent(){
       global $eventStatementGet;
@@ -769,8 +762,9 @@ class ReflectionCycle{
     }
 
    /**
-    * Pick a new event at random and return it
+    * Pick a new location at random and return it
     * eventCycle should get
+    * @return a random location
     */
    public function pickRandomLocation(){
      global $locationStatementGet;
@@ -783,42 +777,42 @@ class ReflectionCycle{
 
 
 /**
- * Currently !!Deprecated!! ...JS implementation used instead in AJAX call
+ * !!Deprecated!! ...JS implementation used instead in AJAX call
  *
  */
-class Markov {
-
-  public function buildNgrams($src, $n){
-   $ngrams = array();
-
-   for ($i=0; $i <= strlen($src)-$n; $i++) {
-     $gram = substr($src, $i, $n);
-     //echo $gram."<br>";
-     if(!in_array($gram, $ngrams)){
-       $ngrams[$gram] = array();//array_push then array_push?
-       //echo $i;
-       //array_push($ngrams, $gram);
-     }
-     //array_push($ngrams[$gram], substr($src, $i+$n, 1));
-     $ngrams[$gram] = substr($src, $i+$n, 1);//save as string here then turn into array?
-   }
-   //var_dump($ngrams);
-   return $ngrams;
-  }
-
-  function Ngrams($word,$n){
-    $len=strlen($word);
-    $ngram=array();
-    for($i=0;$i+$n<=$len;$i++){
-        $string="";
-        for($j=0;$j<$n;$j++){
-            $string.=$word[$j+$i];
-        }
-        $ngram[$i]=$string;
-    }
-        return $ngram;
-  }
-}
+// class Markov {
+//
+//   public function buildNgrams($src, $n){
+//    $ngrams = array();
+//
+//    for ($i=0; $i <= strlen($src)-$n; $i++) {
+//      $gram = substr($src, $i, $n);
+//      //echo $gram."<br>";
+//      if(!in_array($gram, $ngrams)){
+//        $ngrams[$gram] = array();//array_push then array_push?
+//        //echo $i;
+//        //array_push($ngrams, $gram);
+//      }
+//      //array_push($ngrams[$gram], substr($src, $i+$n, 1));
+//      $ngrams[$gram] = substr($src, $i+$n, 1);//save as string here then turn into array?
+//    }
+//    //var_dump($ngrams);
+//    return $ngrams;
+//   }
+//
+//   function Ngrams($word,$n){
+//     $len=strlen($word);
+//     $ngram=array();
+//     for($i=0;$i+$n<=$len;$i++){
+//         $string="";
+//         for($j=0;$j<$n;$j++){
+//             $string.=$word[$j+$i];
+//         }
+//         $ngram[$i]=$string;
+//     }
+//         return $ngram;
+//   }
+// }
 
 
 /**
@@ -907,7 +901,7 @@ class StoryMaker {
    * Execute ACTION statements
    * @param a sql query returning a row from action and
    * the consequence from action_consequence as con_brief
-   * @Return an action object else false
+   * @return an action object else false
    */
   public function getAction($query){
     $resultA = executeQuery($query);
@@ -985,83 +979,83 @@ class StoryMaker {
     *TODO Move out of StoryMaker class
     *-can then check for single events/locations/actions frequency
     */
-   function getStoryStatistics($eventSequence, $locationSequence, $actionSequence){
-     //global $conn;
-     $goodInfoQ = "SELECT * FROM good_story;";
-     $results = executeQuery($goodInfoQ);
-     $size = count($results);
-
-     if($size != 0){
-    	   $eventArray = array();
-      	 $locationArray = array();
-      	 $actionArray = array();
-
-      	  foreach ($results as $row) {
-      		     $eventArray[] = $row['event_sequence'];
-      		     $locationArray[] = $row['location_sequence'];
-      		     $actionArray[] = $row['action_sequence'];
-      	  }
-        $stats = array();//Make an array list to return the stats in
-        /*Get the most popular event details*/
-        $e = array_count_values($eventArray);
-        $eventSize = count($eventArray);
-        //var_dump(strlen($eventSequence));
-        if(strlen($eventSequence) == 2){$eventSequence = $eventSequence+0;} //Force type to int to use as an array index
-        //Give the number of events/actions/locations to stats (only one index now should be one for each category)
-        $stats["kbSize"] = $eventSize;
-        //Check frequency if event has appaered before
-        if(isset($e[$eventSequence])){
-          $eventPer = round($e[$eventSequence] / $eventSize * 100, 2);
-          $eventFreq = $e[$eventSequence];
-          $stats["eventPer"] = $eventPer;
-          $stats["eventFreq"] = $eventFreq;
-        }
-        if(!isset($e[$eventSequence])){
-            $eventPer = 0;
-            $eventFreq = 0;
-            $stats["eventPer"] = $eventPer;
-            $stats["eventFreq"] = $eventFreq;
-          }
-
-        /*Get the most popular location details*/
-        $l = array_count_values($locationArray);
-        $locationSize = count($locationArray);
-        if(strlen($locationSequence) == 2){$locationSequence = $locationSequence+0;}//Force type to int to use as an array index
-        if(isset($l[$locationSequence])){
-          $locPer = round($l[$locationSequence] / $locationSize * 100, 2);
-          $locFreq = $l[$locationSequence];
-          $stats["locPer"] = $locPer;
-          $stats["locFreq"] = $locFreq;
-        }
-        else{
-          $locPer = 0;
-          $locFreq = 0;
-          $stats["locPer"] = $locPer;
-          $stats["locFreq"] = $locFreq;
-        }
-
-        /*Get the most popular action details*/
-        $a = array_count_values($actionArray);
-        $actionSize = count($actionArray);
-        if(strlen($actionSequence) == 2){$actionSequence = $actionSequence+0;}//Force type to int to use as an array index
-        if(isset($a[$actionSequence])){
-          $acFreq = $a[$actionSequence];
-          $acPer = round($a[$actionSequence] / $actionSize * 100, 2);
-          $stats["acPer"] = $acPer;
-          $stats["acFreq"] = $acFreq;
-        }
-        else{
-          $acFreq = 0;
-          $acPer = 0;
-          $stats["acPer"] = $acPer;
-          $stats["acFreq"] = $acFreq;
-        }
-        return $stats;
-
-     }
-     if($size == 0){
-       return false;
-     }
-   }
+  //  function getStoryStatistics($eventSequence, $locationSequence, $actionSequence){
+  //    //global $conn;
+  //    $goodInfoQ = "SELECT * FROM good_story;";
+  //    $results = executeQuery($goodInfoQ);
+  //    $size = count($results);
+   //
+  //    if($size != 0){
+  //   	   $eventArray = array();
+  //     	 $locationArray = array();
+  //     	 $actionArray = array();
+   //
+  //     	  foreach ($results as $row) {
+  //     		     $eventArray[] = $row['event_sequence'];
+  //     		     $locationArray[] = $row['location_sequence'];
+  //     		     $actionArray[] = $row['action_sequence'];
+  //     	  }
+  //       $stats = array();//Make an array list to return the stats in
+  //       /*Get the most popular event details*/
+  //       $e = array_count_values($eventArray);
+  //       $eventSize = count($eventArray);
+  //       //var_dump(strlen($eventSequence));
+  //       if(strlen($eventSequence) == 2){$eventSequence = $eventSequence+0;} //Force type to int to use as an array index
+  //       //Give the number of events/actions/locations to stats (only one index now should be one for each category)
+  //       $stats["kbSize"] = $eventSize;
+  //       //Check frequency if event has appaered before
+  //       if(isset($e[$eventSequence])){
+  //         $eventPer = round($e[$eventSequence] / $eventSize * 100, 2);
+  //         $eventFreq = $e[$eventSequence];
+  //         $stats["eventPer"] = $eventPer;
+  //         $stats["eventFreq"] = $eventFreq;
+  //       }
+  //       if(!isset($e[$eventSequence])){
+  //           $eventPer = 0;
+  //           $eventFreq = 0;
+  //           $stats["eventPer"] = $eventPer;
+  //           $stats["eventFreq"] = $eventFreq;
+  //         }
+   //
+  //       /*Get the most popular location details*/
+  //       $l = array_count_values($locationArray);
+  //       $locationSize = count($locationArray);
+  //       if(strlen($locationSequence) == 2){$locationSequence = $locationSequence+0;}//Force type to int to use as an array index
+  //       if(isset($l[$locationSequence])){
+  //         $locPer = round($l[$locationSequence] / $locationSize * 100, 2);
+  //         $locFreq = $l[$locationSequence];
+  //         $stats["locPer"] = $locPer;
+  //         $stats["locFreq"] = $locFreq;
+  //       }
+  //       else{
+  //         $locPer = 0;
+  //         $locFreq = 0;
+  //         $stats["locPer"] = $locPer;
+  //         $stats["locFreq"] = $locFreq;
+  //       }
+   //
+  //       /*Get the most popular action details*/
+  //       $a = array_count_values($actionArray);
+  //       $actionSize = count($actionArray);
+  //       if(strlen($actionSequence) == 2){$actionSequence = $actionSequence+0;}//Force type to int to use as an array index
+  //       if(isset($a[$actionSequence])){
+  //         $acFreq = $a[$actionSequence];
+  //         $acPer = round($a[$actionSequence] / $actionSize * 100, 2);
+  //         $stats["acPer"] = $acPer;
+  //         $stats["acFreq"] = $acFreq;
+  //       }
+  //       else{
+  //         $acFreq = 0;
+  //         $acPer = 0;
+  //         $stats["acPer"] = $acPer;
+  //         $stats["acFreq"] = $acFreq;
+  //       }
+  //       return $stats;
+   //
+  //    }
+  //    if($size == 0){
+  //      return false;
+  //    }
+  //  }
 }
 ?>

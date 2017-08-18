@@ -11,7 +11,7 @@
   and the code for running the chart data queries in main.php
 -----------------------------------------------------------------------------*/
 /**
- * Some globally accessible variables that shouldn't change when
+ * Some globally accessible variables that don't need to change when
  * mainSetup is called each story generation/page load
  **/
 var storyList = [];
@@ -403,19 +403,7 @@ function disableSeed(){
   * Function to make N-Grams of a string returns arrays
   * Function to generate an n length sequence given a set of N-Grams
   **/
- function makeNgrams(src, n){
-   var ngrams = {};
 
-   for (var i = 0; i <= src.length-n; i++){
-     var gram = src.substring(i, i+n);
-     if(!ngrams[gram]){
-       ngrams[gram] = [];
-     }
-     ngrams[gram].push(src.charAt(i+n));
-   }
-   console.log(ngrams);
-   return ngrams;
- }
  /**
    * @param the source string to turn into an array and pick randomly from
    * @param the n gram size
@@ -437,7 +425,7 @@ function disableSeed(){
   * @return the object containing the n-grams
   * Turns a string into an array containing n-grams of size n
   * The 'grams' are equal to n to enable a selection of sensible storyComponent keys when calling buildMarkov()
-  * (a genuine n-gram generator function is makeNgrams in the deprecated functions)
+  * (a genuine n-gram generator function is makeNgrams in the deprecated functions below)
  **/
 function makeNgrams2(src, n){
  var ngrams = {};
@@ -481,6 +469,19 @@ function buildMarkov(seed, ngrams, n, limit){
 /*---------------------------
   Deprecated Functions
  ---------------------------*/
+ // function makeNgrams(src, n){
+ //   var ngrams = {};
+ //
+ //   for (var i = 0; i <= src.length-n; i++){
+ //     var gram = src.substring(i, i+n);
+ //     if(!ngrams[gram]){
+ //       ngrams[gram] = [];
+ //     }
+ //     ngrams[gram].push(src.charAt(i+n));
+ //   }
+ //   console.log(ngrams);
+ //   return ngrams;
+ // }
 // /*
 //  * Display the generated action cycle to the user
 //  */

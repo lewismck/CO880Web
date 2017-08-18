@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-<!-- A generic footer for the stats and generator modules, to link between them and provide a link to the user feedback page -->
+<!--
+		A generic footer for the stats and generator modules, to link between them and provide a link to the user feedback page
+		@author Lewis Mckeown
+ -->
 <head>
 	<meta charset="utf-8">
 </head>

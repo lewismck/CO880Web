@@ -35,9 +35,9 @@
               FROM evaluated_story es
               WHERE es.rating = 'x'";
 
-  $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";//TODO check the seeds all exist in the evaluated story table?
+  $eventSeedGet = "SELECT e.event_id, e.brief FROM event e;";
 
-  $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";//TODO check the seeds all exist in the evaluated story table?
+  $locationSeedGet = "SELECT l.loc_id, l.name FROM location l;";
 
   $actionSeedGet = "SELECT a.ac_id, a.brief FROM action a;";//TODO check the seeds all exist in the evaluated story table?
 

@@ -8,13 +8,12 @@ if (!$conn){
  }
 
  if(isset($_GET['story_id'])){
-   //Quickly build a query to send the data back
-   $saveEvaluationStatement = "INSERT INTO user_feedback (story_id, dataset, creativity_rating, liked) VALUES(".$_GET['story_id'].",'".$_GET['dataset']."',"
-   .$_GET['creativity_rating'].",'".$_GET['liked']."');";
+   //sanitise the input
+   $saveEvaluationStatement = $conn->prepare("INSERT INTO user_feedback (story_id, dataset, creativity_rating, liked) VALUES(?,?,?,?);");
 
-   //echo $saveEvaluationStatement."<br>";
-   //execute the query and check the result
-   $result = executeInsert($saveEvaluationStatement);
+   //Quickly build a query to send the data back and execute
+   $result = $saveEvaluationStatement->execute(array($_GET['story_id'],$_GET['dataset'],$_GET['creativity_rating'],$_GET['liked']));
+
    if($result){
      echo "Evaluated succesfully.";
    }

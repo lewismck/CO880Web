@@ -5,7 +5,7 @@
   Generate the charts comparing
   the evaluated story data and
   put them in the labelled
-  canvases
+  canvases in stats.php
  -------------------------------*/
 function generateCharts(){
   /*Fill an array with enough colour entries for every x tick on the charts*/
@@ -128,7 +128,11 @@ function generateCharts(){
     });
 
 
-
+  /*-------------------------------
+    Deprecated charts stuff
+    These are no longer populated
+    or used in the stats page
+   -------------------------------*/
   /*------------------------
     Action Frequency Chart
    ------------------------*/
@@ -222,6 +226,3 @@ function generateCharts(){
   });
 
 }
-/*---------------------------
-  Deprecated chartJS stuff
- ---------------------------*/
