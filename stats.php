@@ -91,7 +91,20 @@
 	</div>
 	<div class="col-md-6">
 		<h4 class="text-center">Liked To Not Liked</h4>
+		<h5 class="text-center">(By Dataset)</h5>
 		<canvas id="like-dislike-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
+	</div>
+</div>
+<div class="col-md-12 row">
+	<div class="col-md-6">
+		<h4 class="text-center">Creativity Ratings</h4>
+		<h5 class="text-center">(Totals)</h5>
+		<canvas id="cnc-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
+	</div>
+	<div class="col-md-6">
+		<h4 class="text-center">Liked To Not Liked</h4>
+		<h5 class="text-center">(Totals)</h5>
+		<canvas id="like-dislike-total-chart" class="chartjs" width="1540" height="770" style="display: block; height: 385px; width: 700px;"></canvas>
 	</div>
 </div>
 <div class="col-md-12 row">

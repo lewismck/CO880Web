@@ -101,6 +101,22 @@ class Main {
   }
 
   /**
+   * Get the Creative/Not Creative/Neutral breakdown for the whole KB
+   * @return the creativity breakdown for the KB
+   **/
+  function getCreativeToNotCreative(){
+    global $getCreativeToNotCreative;
+    $cnc = executeQuery($getCreativeToNotCreative);
+
+    $creativeNotCreative = array();
+    foreach ($cnc as $row) {
+      array_push($creativeNotCreative, $row['cnc']);
+    }
+
+    return $creativeNotCreative;
+  }
+
+  /**
    * @param a string containing a comma separated, list of values
    * @return an array list of the values with their frequency in key-value pairs
    * Turn a string from the KB into a list containing key-value pairs

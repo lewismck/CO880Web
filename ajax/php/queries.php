@@ -240,5 +240,15 @@
                         UNION ALL
                         SELECT COUNT(*) FROM user_feedback WHERE dataset = 'tightlyConstrained' and liked = 'false'
                         UNION ALL
-                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'tightlyConstrained' and liked != 'false';";
+                        SELECT COUNT(*) FROM user_feedback WHERE dataset = 'tightlyConstrained' and liked != 'false'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE liked = 'true'
+                        UNION ALL
+                        SELECT COUNT(*) FROM user_feedback WHERE liked = 'false';";
+
+  $getCreativeToNotCreative = "SELECT COUNT(*) cnc FROM user_feedback WHERE creativity_rating >= 1
+                               UNION ALL
+                               SELECT COUNT(*) FROM user_feedback WHERE creativity_rating <= -1
+                               UNION ALL
+                               SELECT COUNT(*) FROM user_feedback WHERE creativity_rating = 0;";
  ?>

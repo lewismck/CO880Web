@@ -443,6 +443,7 @@ elseif($params->func == 'getChartData'){
   $passableSortedLocations = json_encode($main->turnKBDataToArray($kbData->location_seq));
   $passableAVGcreativity = json_encode($main->getCreativityRatings());
   $passableLikeDislike = json_encode($main->getLikeToDislike());
+  $passableCreativeNotCreative = json_encode($main->getCreativeToNotCreative());
   //Echo the data from the knowledge base that the n-gram and markov functions need
   //This will be re-thought when I redo the charts module - the event/loc/action frequencies aren't used at all anymore
   echo "<script>
@@ -454,6 +455,7 @@ elseif($params->func == 'getChartData'){
           var sortedLocations = ".$passableSortedLocations.";
           var avgCreativity = ".$passableAVGcreativity.";
           var likeToDislike = ".$passableLikeDislike.";
+          var cnc = ".$passableCreativeNotCreative.";
           var ac_labels = [];
           var ac_values = [];
           var ev_labels = [];

@@ -127,6 +127,42 @@ function generateCharts(){
       ,"options":{"scales":{"yAxes":[{"ticks":{"beginAtZero":true}}]}}
     });
 
+    /*-----------------------------
+      Like to Dislike Totals chart
+     -----------------------------*/
+    new Chart(
+      document.getElementById("like-dislike-total-chart")
+        ,{"type":"bar"
+        ,"data":{"labels":["Liked", "Not Liked"]
+        ,"datasets":[{"label":"Liked and Not Liked"
+        ,"data":[likeToDislike[8], likeToDislike[9]]
+        ,"fill":false,"backgroundColor":[good_story_colour, bad_story_colour] //rgb(249, 196, 172) rgba(255, 99, 132, 0.2)
+        ,"borderColor":[good_story_border_colour, bad_story_border_colour]
+        ,"borderWidth":1}
+
+       ]
+     }
+       ,"options":{"scales":{"yAxes":[{"ticks":{"beginAtZero":true}}]}}
+     });
+
+     /*-----------------------------------
+       Creative/NotCreative/Neutral chart
+      -----------------------------------*/
+     new Chart(
+       document.getElementById("cnc-chart")
+         ,{"type":"bar"
+         ,"data":{"labels":["Creative", "Not Creative", "Neutral"]
+         ,"datasets":[{"label":["Creative", "Not Creative", "Neutral"]
+         ,"data":[cnc[0], cnc[1], cnc[2]]
+         ,"fill":false,"backgroundColor":[good_story_colour, bad_story_colour, "rgba(113, 115, 117, 0.2)"] //rgb(249, 196, 172) rgba(255, 99, 132, 0.2)
+         ,"borderColor":[good_story_border_colour, bad_story_border_colour, "rgb(113, 115, 117)"]
+         ,"borderWidth":1}
+
+        ]
+      }
+        ,"options":{"scales":{"yAxes":[{"ticks":{"beginAtZero":true}}]}}
+      });
+
 
   /*-------------------------------
     Deprecated charts stuff
