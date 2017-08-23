@@ -81,6 +81,7 @@
 				Strongly Disagree = -2<br>
 				This is converted into a chart below showing the average for each of the datasets.
 			</p>
+			<p><strong>The data presented below is an unfiltered overview of all responses and as such includes data from respondents who did not complete the entire feedback form.</strong></p>
 		</div>
   </div>
 </div>
